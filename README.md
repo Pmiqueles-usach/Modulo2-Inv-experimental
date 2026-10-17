@@ -128,17 +128,22 @@ docker build -f docker/analysis/Dockerfile -t matmul-analysis:1.0 .
 python3 -m venv .venv && .venv/bin/pip install -r requirements-host.txt
 
 # 3) Ejecutar TODO el flujo con un único comando
-.venv/bin/snakemake
+.venv/bin/snakemake --config results_dir=results_repro
 ```
+
+> El repositorio ya contiene los resultados publicados en `results/`. Por eso, un simple
+> `snakemake` responde "Nothing to be done". Para **reproducir** el experimento use un
+> directorio nuevo (`results_dir=results_repro`) y compare con `results/`; para regenerar los
+> resultados publicados, use `snakemake --forceall`.
 
 Con **Podman** (o si el usuario no pertenece al grupo `docker`):
 
 ```bash
 ENGINE=podman scripts/build_images.sh
-.venv/bin/snakemake --config engine=podman
+.venv/bin/snakemake --config engine=podman results_dir=results_repro
 # Si podman falla con "sd-bus call ... Input/output error" (sin sesión systemd):
 ENGINE="podman --cgroup-manager=cgroupfs" scripts/build_images.sh
-.venv/bin/snakemake --config engine="podman --cgroup-manager=cgroupfs"
+.venv/bin/snakemake --config engine="podman --cgroup-manager=cgroupfs" results_dir=results_repro
 ```
 
 Prueba rápida (≈ 1,5 min) en un directorio separado, sin tocar los resultados publicados:
@@ -152,11 +157,12 @@ Para regenerar desde cero: `.venv/bin/snakemake --forceall`.
 ### Grafo del pipeline
 
 ```
-check_image(cpp|go|java|python) ─► run_benchmark ─► raw/<lang>.csv ─┐
-                                               └─► verification/<lang>_checksum.csv ─► verify_equivalence
-check_image(analysis) ───────────────────────────────────────────────┤
-                                             merge ─► benchmark.csv ─► analysis ─► tables/ figures/ reporte
-check_image(*) ─► environment ─► environment/environment.md
+run_benchmark(cpp|go|java|python) ─► raw/<lang>.csv ─► merge ─► benchmark.csv ─► analysis ─► tables/ figures/ reporte
+                                 └─► verification/<lang>_checksum.csv ─► verify_equivalence ─► equivalence_report.md
+environment ─► environment/environment.md
+
+Antes de ejecutarse, cada regla comprueba que su imagen exista localmente; si falta, se detiene
+e indica el comando `build` exacto.
 ```
 
 `snakemake --dag | dot -Tpng > dag.png` genera el grafo real.
@@ -192,7 +198,56 @@ Descripción FAIR completa: [docs/DATASHEET_FAIR.md](docs/DATASHEET_FAIR.md).
 ## 11. Resultados
 
 <!-- RESULTADOS:INICIO -->
-Ver [results/analysis/reporte_estadistico.md](results/analysis/reporte_estadistico.md).
+Corrida oficial del 2026‑10‑17 (Intel Core Ultra 7 165H, 30 GB RAM, Fedora 42 / kernel 6.18,
+Podman 5.8.2; entorno completo en [results/environment/environment.md](results/environment/environment.md)).
+Duración total del pipeline: 2 h 33 min.
+
+**Tiempo medio de la multiplicación [s] (10 repeticiones; entre paréntesis, razón respecto de C++)**
+
+| N | C++ | Go | Java | Python |
+|---|---|---|---|---|
+| 500 | 0,080 | 0,118 (1,47×) | 0,163 (2,03×) | 20,0 (249×) |
+| 1000 | 0,889 | 1,460 (1,64×) | 1,220 (1,37×) | 178,2 (200×) |
+| 1500 | 5,519 | 9,415 (1,71×) | 8,724 (1,58×) | 688,5 (125×) |
+
+**ANOVA de dos factores con interacción**
+
+| Efecto | F (tiempo) | p (tiempo) | F (log10) | p (log10) | η² parcial (log10) |
+|---|---|---|---|---|---|
+| Lenguaje | 6091 | 2,8·10⁻¹²⁰ | 15 740 | 1,8·10⁻¹⁴² | 0,998 |
+| N | 3109 | 3,5·10⁻⁹⁶ | 14 230 | 1,5·10⁻¹³¹ | 0,996 |
+| Lenguaje × N | 2828 | 2,8·10⁻¹¹⁶ | 37,6 | 2,5·10⁻²⁴ | 0,676 |
+
+**Conclusiones**
+
+1. **Se rechaza H₀** (α = 0,05): el lenguaje produce diferencias significativas en el tiempo
+   de ejecución. Tukey HSD encuentra diferencias significativas en **los 6 pares de lenguajes
+   para cada uno de los 3 tamaños** (18/18 comparaciones); Kruskal‑Wallis lo confirma en cada N
+   (p < 2·10⁻⁷).
+2. **La interacción lenguaje × N es significativa**: la diferencia entre lenguajes depende del
+   tamaño de la matriz. Se observa en dos hechos:
+   - **Go y Java intercambian posiciones**: con N = 500 Go es más rápido que Java, mientras que
+     con N = 1000 y 1500 Java supera a Go.
+   - **La desventaja relativa de Python disminuye** al crecer N (249× → 125×). Una explicación posible es que, en los
+     lenguajes compilados el costo de los accesos a memoria por columnas de B (fallos de caché)
+     crecería más rápido que el costo del intérprete. Es una hipótesis plausible que este
+     experimento no pone a prueba.
+3. Orden de los lenguajes, de más rápido a más lento: C++ < Go < Java ≪ Python con N = 500;
+   C++ < Java < Go ≪ Python con N = 1000 y 1500.
+4. **Supuestos:** los residuos no son normales y las varianzas no son homogéneas, ni siquiera
+   en log10 (Shapiro p = 0,002; Levene p < 10⁻⁵). Aun así, con diferencias de esta magnitud,
+   el modelo log10 y la prueba no paramétrica llegan a la misma conclusión.
+5. **Equivalencia funcional:** las 4 implementaciones producen la **misma matriz bit a bit**
+   (checksums idénticos en los 3 tamaños,
+   [equivalence_report.md](results/verification/equivalence_report.md)).
+6. **Observación de estabilidad:** en Python con N = 1500, las repeticiones 7–10 fueron
+   ~8 % más rápidas (634–667 s frente a 704–727 s). Es compatible con cambios de frecuencia o
+   de carga del equipo durante una corrida de ~2 h; queda registrada como amenaza a la validez.
+
+Reporte completo: [results/analysis/reporte_estadistico.md](results/analysis/reporte_estadistico.md)
+
+![Interacción lenguaje × N](results/analysis/figures/interaccion_lenguaje_N.png)
+![Razón respecto de C++](results/analysis/figures/speedup_vs_cpp.png)
 <!-- RESULTADOS:FIN -->
 
 ## 12. Reutilización y extensión
