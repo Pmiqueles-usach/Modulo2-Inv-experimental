@@ -19,3 +19,6 @@ artifact-*.zip
 .idea/
 .DS_Store
 *~
+
+# Cachés generadas por contenedores (matplotlib, etc.)
+.cache/
