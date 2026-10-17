@@ -1,0 +1,8 @@
+.git
+.snakemake
+.venv
+results
+results_*
+docs
+*.pptx
+*.pdf
