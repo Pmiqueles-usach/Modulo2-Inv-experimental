@@ -9,9 +9,12 @@
 #   snakemake --config engine=podman           # con Podman en vez de Docker
 #
 # Grafo de dependencias:
-#   check_image ─► run_benchmark (x4) ─► merge ─► analysis ─► tablas/figuras/reporte
-#                                    └─► verify_equivalence
+#   run_benchmark (x4) ─► merge ─► analysis ─► tablas/figuras/reporte
+#                     └─► verify_equivalence
 #   environment (registro del entorno)
+#
+# Cada regla comprueba antes de ejecutarse que su imagen exista localmente
+# (sin archivos marca: así reconstruir el reporte no obliga a repetir los benchmarks).
 
 import os
 
@@ -28,7 +31,21 @@ R = config["results_dir"]
 
 # Opciones para que los archivos generados pertenezcan al usuario del host.
 USER_OPTS = "--userns=keep-id" if ENGINE.startswith("podman") else f"--user {os.getuid()}:{os.getgid()}"
-ANALYSIS = (
+
+
+def requiere_imagen(img):
+    """Fragmento shell que falla con un mensaje claro si la imagen no fue construida.
+
+    No se permite descargar imágenes del benchmark desde registros (Docker Hub, GHCR, etc.).
+    """
+    return (
+        f"if ! {ENGINE} image inspect matmul-{img}:{TAG} > /dev/null 2>&1; then "
+        f"echo 'ERROR: falta la imagen matmul-{img}:{TAG}. Constrúyala manualmente: "
+        f"{ENGINE} build -f docker/{img}/Dockerfile -t matmul-{img}:{TAG} .' >&2; exit 1; fi; "
+    )
+
+
+ANALYSIS = requiere_imagen("analysis") + (
     f"{ENGINE} run --rm {USER_OPTS} --network none "
     f"-v {os.getcwd()}:/work:z -w /work matmul-analysis:{TAG}"
 )
@@ -42,28 +59,10 @@ rule all:
         f"{R}/environment/environment.md",
 
 
-# Falla con un mensaje claro si una imagen no fue construida manualmente.
-# No se permite descargar imágenes del benchmark desde registros (Docker Hub, GHCR, etc.).
-rule check_image:
-    output:
-        temp(f"{R}/.images/{{img}}.ok"),
-    shell:
-        f"""
-        if ! {ENGINE} image inspect matmul-{{wildcards.img}}:{TAG} > /dev/null 2>&1; then
-            echo "ERROR: falta la imagen matmul-{{wildcards.img}}:{TAG}." >&2
-            echo "Constrúyala manualmente: {ENGINE} build -f docker/{{wildcards.img}}/Dockerfile -t matmul-{{wildcards.img}}:{TAG} ." >&2
-            exit 1
-        fi
-        {ENGINE} image inspect --format '{{{{.Id}}}}' matmul-{{wildcards.img}}:{TAG} > {{output}}
-        """
-
-
 # Ejecuta el contenedor de un lenguaje: genera <lang>.csv y su checksum.
 # El recurso 'benchmark_slot=1' (perfil por defecto) impide ejecutar dos
 # benchmarks en paralelo, evitando la contención de CPU entre lenguajes.
 rule run_benchmark:
-    input:
-        f"{R}/.images/{{lang}}.ok",
     output:
         csv=f"{R}/raw/{{lang}}.csv",
         checksum=f"{R}/verification/{{lang}}_checksum.csv",
@@ -71,8 +70,11 @@ rule run_benchmark:
         f"{R}/logs/{{lang}}.log",
     resources:
         benchmark_slot=1,
+    params:
+        check=lambda wc: requiere_imagen(wc.lang),
     shell:
         f"""
+        {{params.check}}
         {ENGINE} run --rm {USER_OPTS} --network none \
             -v {os.getcwd()}/{R}:/results:z \
             matmul-{{wildcards.lang}}:{TAG} \
@@ -85,7 +87,6 @@ rule run_benchmark:
 # Integra los cuatro CSV en benchmark.csv (dentro del contenedor de análisis).
 rule merge:
     input:
-        f"{R}/.images/analysis.ok",
         csvs=expand(f"{R}/raw/{{lang}}.csv", lang=LANGS),
     output:
         f"{R}/benchmark.csv",
@@ -96,7 +97,6 @@ rule merge:
 # Comprueba que las cuatro implementaciones producen la misma matriz resultado.
 rule verify_equivalence:
     input:
-        f"{R}/.images/analysis.ok",
         checksums=expand(f"{R}/verification/{{lang}}_checksum.csv", lang=LANGS),
     output:
         f"{R}/verification/equivalence_report.md",
@@ -107,7 +107,6 @@ rule verify_equivalence:
 # ANOVA de dos factores con interacción, Tukey HSD, tablas y gráficos.
 rule analysis:
     input:
-        f"{R}/.images/analysis.ok",
         bench=f"{R}/benchmark.csv",
     output:
         report=f"{R}/analysis/reporte_estadistico.md",
@@ -122,9 +121,7 @@ rule analysis:
 
 # Registra hardware, sistema operativo y versiones de compiladores/VM.
 rule environment:
-    input:
-        expand(f"{R}/.images/{{img}}.ok", img=LANGS + ["analysis"]),
     output:
         f"{R}/environment/environment.md",
     shell:
-        f"scripts/collect_env.sh {{output}} {ENGINE} {TAG}"
+        f"scripts/collect_env.sh {{output}} '{ENGINE}' {TAG}"

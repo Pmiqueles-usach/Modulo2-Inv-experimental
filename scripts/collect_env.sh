@@ -11,7 +11,7 @@ mkdir -p "$(dirname "$SALIDA")"
 # Ejecuta un comando dentro de la imagen indicada (sin usar el ENTRYPOINT del benchmark).
 en_imagen() {
     local imagen="$1"; shift
-    $MOTOR run --rm --entrypoint sh "$imagen" -c "$*" 2>&1 | head -n 3 || echo "(no disponible)"
+    $MOTOR run --rm --entrypoint sh "$imagen" -c "$*" 2>&1 || echo "(no disponible)"
 }
 
 {
@@ -23,7 +23,7 @@ en_imagen() {
     echo
     echo '```'
     echo "Procesador:        $(lscpu | sed -n 's/^Model name:[[:space:]]*//p')"
-    echo "Núcleos lógicos:   $(nproc)"
+    echo "Núcleos lógicos:   $(getconf _NPROCESSORS_ONLN)"  # nproc respeta límites del job
     echo "Arquitectura:      $(uname -m)"
     echo "RAM total:         $(free -h | awk '/^Mem:/ {print $2}')"
     echo "Sistema operativo: $(. /etc/os-release && echo "$PRETTY_NAME")"

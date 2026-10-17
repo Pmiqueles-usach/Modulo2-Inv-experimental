@@ -62,6 +62,14 @@ ENGINE="podman --cgroup-manager=cgroupfs" scripts/build_images.sh
    `results/analysis/reporte_estadistico.md`; no inventar valores.
 4. Revisar las figuras (`results/analysis/figures/*.png`) abriéndolas, no solo generándolas.
 
+### B2. Regenerar solo integración/análisis/entorno (sin repetir benchmarks)
+`.venv/bin/snakemake --config engine=... --forcerun analysis environment`. Si se editó el
+texto de la regla `run_benchmark` (no su cómputo), Snakemake querrá repetir 2,5 h de
+benchmarks por cambio de código: verificar primero con `-n` y, si los CSV siguen siendo
+válidos, ejecutar `--cleanup-metadata results/raw/*.csv results/verification/*_checksum.csv`.
+Un tercero que reproduzca debe usar `--config results_dir=results_repro` (results/ ya
+contiene los resultados publicados).
+
 ### C. Autoevaluación ACM de una semana
 Usar la tabla de criterios de `docs/ACM_BADGES.md`:
 - **Functional** = documented + consistent + complete + exercisable + evidencia de verificación.

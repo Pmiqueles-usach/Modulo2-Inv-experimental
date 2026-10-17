@@ -281,7 +281,7 @@ def main() -> int:
         "",
         "## 2. Razón de tiempos respecto de C++",
         "",
-        sp.to_markdown(index=False, floatfmt=".3g"),
+        sp.astype({"N": str}).to_markdown(index=False, floatfmt=".3g"),
         "",
         "## 3. ANOVA de dos factores (tiempo en segundos)",
         "",
