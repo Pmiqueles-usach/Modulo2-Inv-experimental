@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "Si utiliza este artifact, cítelo usando estos metadatos."
+title: "Benchmark reproducible de multiplicación de matrices NxN en C++, Go, Java y Python"
+type: software
+authors:
+  - alias: "Pmiqueles-usach"
+    affiliation: "Universidad de Santiago de Chile (USACH)"
+    # Completar: given-names, family-names, orcid
+version: 1.0.0
+# doi: 10.5281/zenodo.PENDIENTE
+date-released: "2026-10-17"
+license: MIT
+repository-code: "https://github.com/Pmiqueles-usach/Modulo2-Inv-experimental"
+keywords:
+  - reproducibility
+  - benchmark
+  - matrix multiplication
+  - ACM artifact badging
+  - Snakemake
+  - Docker
+abstract: >-
+  Artifact reproducible que compara el tiempo de ejecución del algoritmo naive de
+  multiplicación de matrices NxN (N = 500, 1000, 1500; 10 repeticiones) implementado de
+  forma equivalente en C++, Go, Java y Python, con entornos Docker, pipeline Snakemake y
+  análisis ANOVA de dos factores con Tukey HSD.
