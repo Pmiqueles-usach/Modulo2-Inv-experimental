@@ -1,0 +1,16 @@
+{
+  "title": "Benchmark reproducible de multiplicación de matrices NxN en C++, Go, Java y Python",
+  "upload_type": "software",
+  "description": "<p>Artifact científico reproducible (Módulo 2, curso Experimentación Computacional, Doctorado USACH) que compara el tiempo de ejecución del algoritmo naive de multiplicación de matrices NxN (N = 500, 1000, 1500; 10 repeticiones) implementado de forma equivalente en C++, Go, Java y Python. Incluye código fuente, Dockerfile, pipeline Snakemake, resultados por lenguaje (cpp.csv, go.csv, java.csv, python.csv), benchmark.csv consolidado, análisis ANOVA de dos factores con Tukey HSD, tablas, gráficos, licencia y mini datasheet FAIR. Preparado siguiendo ACM Artifact Review and Badging v1.1.</p>",
+  "creators": [
+    {"name": "Pmiqueles-usach", "affiliation": "Universidad de Santiago de Chile"}
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "language": "spa",
+  "keywords": ["reproducibility", "replicability", "benchmark", "matrix multiplication", "C++", "Go", "Java", "Python", "Docker", "Snakemake", "ACM artifact badging", "ANOVA"],
+  "related_identifiers": [
+    {"identifier": "https://github.com/Pmiqueles-usach/Modulo2-Inv-experimental", "relation": "isSupplementTo", "scheme": "url"}
+  ],
+  "version": "1.0.0"
+}
