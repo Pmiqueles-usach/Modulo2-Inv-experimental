@@ -1,0 +1,26 @@
+# Parámetros del experimento (pueden sobrescribirse con: snakemake --config clave=valor)
+
+# Motor de contenedores: "docker" o "podman" (los Dockerfile son idénticos para ambos).
+# Puede incluir opciones globales, p.ej. "podman --cgroup-manager=cgroupfs".
+engine: docker
+
+# Etiqueta de las imágenes construidas manualmente (matmul-<lenguaje>:<tag>).
+image_tag: "1.0"
+
+# Lenguajes evaluados (factor 1).
+languages: [cpp, go, java, python]
+
+# Tamaños de matriz N (factor 2).
+sizes: [500, 1000, 1500]
+
+# Repeticiones por combinación lenguaje x N.
+repetitions: 10
+
+# Semilla del generador SplitMix64 (misma para los 4 lenguajes).
+seed: 42
+
+# Directorio de resultados (usar otro, p.ej. results_smoke, para pruebas rápidas).
+results_dir: results
+
+# Nivel de significancia del análisis estadístico.
+alpha: 0.05

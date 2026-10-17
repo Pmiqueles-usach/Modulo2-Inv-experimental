@@ -1,0 +1,130 @@
+# Pipeline reproducible: benchmark naive de multiplicación de matrices NxN
+# en C++, Go, Java y Python.
+#
+# Requisito previo: construir MANUALMENTE las imágenes (ver README.md, sección 6):
+#   docker build -f docker/<lang>/Dockerfile -t matmul-<lang>:1.0 .
+#
+# Ejecución completa (desde la raíz del repositorio):
+#   snakemake                                  # usa workflow/profiles/default
+#   snakemake --config engine=podman           # con Podman en vez de Docker
+#
+# Grafo de dependencias:
+#   check_image ─► run_benchmark (x4) ─► merge ─► analysis ─► tablas/figuras/reporte
+#                                    └─► verify_equivalence
+#   environment (registro del entorno)
+
+import os
+
+configfile: "config/config.yaml"
+
+ENGINE = config["engine"]
+TAG = str(config["image_tag"])
+LANGS = list(config["languages"])
+SIZES = ",".join(str(n) for n in config["sizes"])
+REPS = int(config["repetitions"])
+SEED = int(config["seed"])
+ALPHA = float(config["alpha"])
+R = config["results_dir"]
+
+# Opciones para que los archivos generados pertenezcan al usuario del host.
+USER_OPTS = "--userns=keep-id" if ENGINE.startswith("podman") else f"--user {os.getuid()}:{os.getgid()}"
+ANALYSIS = (
+    f"{ENGINE} run --rm {USER_OPTS} --network none "
+    f"-v {os.getcwd()}:/work:z -w /work matmul-analysis:{TAG}"
+)
+
+
+rule all:
+    input:
+        f"{R}/benchmark.csv",
+        f"{R}/verification/equivalence_report.md",
+        f"{R}/analysis/reporte_estadistico.md",
+        f"{R}/environment/environment.md",
+
+
+# Falla con un mensaje claro si una imagen no fue construida manualmente.
+# No se permite descargar imágenes del benchmark desde registros (Docker Hub, GHCR, etc.).
+rule check_image:
+    output:
+        temp(f"{R}/.images/{{img}}.ok"),
+    shell:
+        f"""
+        if ! {ENGINE} image inspect matmul-{{wildcards.img}}:{TAG} > /dev/null 2>&1; then
+            echo "ERROR: falta la imagen matmul-{{wildcards.img}}:{TAG}." >&2
+            echo "Constrúyala manualmente: {ENGINE} build -f docker/{{wildcards.img}}/Dockerfile -t matmul-{{wildcards.img}}:{TAG} ." >&2
+            exit 1
+        fi
+        {ENGINE} image inspect --format '{{{{.Id}}}}' matmul-{{wildcards.img}}:{TAG} > {{output}}
+        """
+
+
+# Ejecuta el contenedor de un lenguaje: genera <lang>.csv y su checksum.
+# El recurso 'benchmark_slot=1' (perfil por defecto) impide ejecutar dos
+# benchmarks en paralelo, evitando la contención de CPU entre lenguajes.
+rule run_benchmark:
+    input:
+        f"{R}/.images/{{lang}}.ok",
+    output:
+        csv=f"{R}/raw/{{lang}}.csv",
+        checksum=f"{R}/verification/{{lang}}_checksum.csv",
+    log:
+        f"{R}/logs/{{lang}}.log",
+    resources:
+        benchmark_slot=1,
+    shell:
+        f"""
+        {ENGINE} run --rm {USER_OPTS} --network none \
+            -v {os.getcwd()}/{R}:/results:z \
+            matmul-{{wildcards.lang}}:{TAG} \
+            /results/raw/{{wildcards.lang}}.csv {SIZES} {REPS} {SEED} \
+            /results/verification/{{wildcards.lang}}_checksum.csv \
+            2> {{log}}
+        """
+
+
+# Integra los cuatro CSV en benchmark.csv (dentro del contenedor de análisis).
+rule merge:
+    input:
+        f"{R}/.images/analysis.ok",
+        csvs=expand(f"{R}/raw/{{lang}}.csv", lang=LANGS),
+    output:
+        f"{R}/benchmark.csv",
+    shell:
+        f"{ANALYSIS} python scripts/merge_results.py {{output}} {{input.csvs}}"
+
+
+# Comprueba que las cuatro implementaciones producen la misma matriz resultado.
+rule verify_equivalence:
+    input:
+        f"{R}/.images/analysis.ok",
+        checksums=expand(f"{R}/verification/{{lang}}_checksum.csv", lang=LANGS),
+    output:
+        f"{R}/verification/equivalence_report.md",
+    shell:
+        f"{ANALYSIS} python scripts/verify_equivalence.py {{output}} {{input.checksums}}"
+
+
+# ANOVA de dos factores con interacción, Tukey HSD, tablas y gráficos.
+rule analysis:
+    input:
+        f"{R}/.images/analysis.ok",
+        bench=f"{R}/benchmark.csv",
+    output:
+        report=f"{R}/analysis/reporte_estadistico.md",
+        descriptivos=f"{R}/analysis/tables/descriptivos.csv",
+        anova=f"{R}/analysis/tables/anova_tiempo.csv",
+        tukey=f"{R}/analysis/tables/tukey_lenguaje_por_N_log.csv",
+        boxplot=f"{R}/analysis/figures/boxplot_tiempos.png",
+        interaccion=f"{R}/analysis/figures/interaccion_lenguaje_N.png",
+    shell:
+        f"{ANALYSIS} python scripts/analysis.py {{input.bench}} {R}/analysis {ALPHA}"
+
+
+# Registra hardware, sistema operativo y versiones de compiladores/VM.
+rule environment:
+    input:
+        expand(f"{R}/.images/{{img}}.ok", img=LANGS + ["analysis"]),
+    output:
+        f"{R}/environment/environment.md",
+    shell:
+        f"scripts/collect_env.sh {{output}} {ENGINE} {TAG}"
