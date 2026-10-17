@@ -29,12 +29,15 @@
 
 | Regla | Entrada | Salida |
 |---|---|---|
-| `check_image` | imagen local `matmul-<x>:1.0` | marca temporal; **falla** si la imagen no fue construida |
 | `run_benchmark` | imagen del lenguaje | `raw/<lang>.csv`, `verification/<lang>_checksum.csv` |
 | `merge` | 4 CSV | `benchmark.csv` |
 | `verify_equivalence` | 4 checksums | `equivalence_report.md` |
 | `analysis` | `benchmark.csv` | tablas, figuras, `reporte_estadistico.md` |
 | `environment` | imágenes | `environment.md` |
+
+Cada regla verifica antes de ejecutarse que su imagen `matmul-<x>:1.0` exista localmente y,
+si no existe, se detiene con el comando de construcción. Esta comprobación no usa archivos de
+marca: regenerar el análisis nunca obliga a repetir los benchmarks.
 
 Los benchmarks usan el recurso `benchmark_slot=1`: nunca corren dos lenguajes a la vez,
 aunque se invoque Snakemake con más núcleos (evita contención de CPU).
@@ -47,6 +50,11 @@ aunque se invoque Snakemake con más núcleos (evita contención de CPU).
   modelo sobre **log10(tiempo)** (efectos multiplicativos) y se usa Kruskal‑Wallis por N como
   contraste no paramétrico.
 - Post‑hoc Tukey HSD: lenguaje global, lenguaje dentro de cada N y las 12 combinaciones.
+
+## Resultados
+
+Ver la sección 11 del [README](../../README.md): se rechaza H₀ y la interacción lenguaje × N es
+significativa (Go y Java intercambian posiciones entre N = 500 y N ≥ 1000).
 
 ## Comando único
 
