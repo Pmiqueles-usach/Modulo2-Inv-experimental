@@ -1,0 +1,21 @@
+# Entornos locales
+.venv/
+__pycache__/
+*.pyc
+.snakemake/
+
+# Resultados de pruebas rápidas (los resultados oficiales en results/ SÍ se versionan)
+results_*/
+results/.images/
+
+# Binarios locales
+src/cpp/matmul
+src/go/matmul
+*.class
+artifact-*.zip
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store
+*~
