@@ -18,6 +18,8 @@ Se construye siguiendo la política
 > La autoevaluación no equivale a un badge oficial: los badges ACM los otorga el comité de
 > evaluación de artifacts de cada conferencia/revista.
 
+> **¿Solo quiere ejecutar los programas a mano?** Vea la guía simple [LEEME.md](LEEME.md).
+
 ---
 
 ## 1. Objetivo
