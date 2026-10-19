@@ -192,6 +192,19 @@ def figura_qq(modelo, ruta: str, titulo: str) -> None:
     plt.close(fig)
 
 
+def interpretar_interaccion(p_tiempo: float, p_log: float, alpha: float) -> str:
+    """Interpreta la interacción; el modelo log10 es el principal (varianza más estable)."""
+    if p_tiempo < alpha and p_log < alpha:
+        return "La diferencia entre lenguajes **depende del tamaño de la matriz** (ambos modelos)."
+    if p_log < alpha:
+        return "La razón de tiempos entre lenguajes **depende del tamaño de la matriz** (modelo log10)."
+    if p_tiempo < alpha:
+        return ("La interacción es significativa solo en la escala original: las diferencias "
+                "**absolutas** crecen con N, pero las **razones** entre lenguajes se mantienen "
+                "aproximadamente constantes (interacción no significativa en log10).")
+    return "No hay evidencia de que la diferencia entre lenguajes dependa del tamaño."
+
+
 def decision(p: float, alpha: float) -> str:
     return "se rechaza H₀" if p < alpha else "no se rechaza H₀"
 
@@ -319,9 +332,7 @@ def main() -> int:
         f"- Efecto principal del lenguaje (log10): F = {anova_l.loc['Lenguaje', 'F']:.4g}, "
         f"p = {p_lang_l:.3g} → **{decision(p_lang_l, alpha)}**.",
         f"- Interacción lenguaje × N (tiempo): p = {p_int_t:.3g}; (log10): p = {p_int_l:.3g}. "
-        + ("La diferencia entre lenguajes **depende del tamaño de la matriz**."
-           if min(p_int_t, p_int_l) < alpha else
-           "No hay evidencia de que la diferencia entre lenguajes dependa del tamaño."),
+        + interpretar_interaccion(p_int_t, p_int_l, alpha),
         "",
         "## 9. Figuras",
         "",

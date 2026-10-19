@@ -182,6 +182,11 @@ Cada imagen ejecuta por defecto N = 500, 1000, 1500 con 10 repeticiones y semill
 cambiar: `docker run ... matmul-go:1.0 /results/raw/go.csv 200,400 5 42` o con
 `scripts/run_container.sh <lang> [tamaños] [reps] [semilla]`.
 
+### Demostración en consola (clase)
+
+`scripts/demo.sh` recorre las 5 semanas con comandos visibles y pausas (≈3 min, en
+`results_demo/`). Guía: [docs/DEMO.md](docs/DEMO.md).
+
 ## 10. Formato de los datos
 
 `results/raw/<lang>.csv` y `results/benchmark.csv`:
