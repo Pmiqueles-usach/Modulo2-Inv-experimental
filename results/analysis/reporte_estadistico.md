@@ -94,7 +94,7 @@ Pares **no** significativos: ninguno.
 
 - Efecto principal del lenguaje (tiempo): F = 6091, p = 2.8e-120 → **se rechaza H₀**.
 - Efecto principal del lenguaje (log10): F = 1.574e+04, p = 1.84e-142 → **se rechaza H₀**.
-- Interacción lenguaje × N (tiempo): p = 2.76e-116; (log10): p = 2.54e-24. La diferencia entre lenguajes **depende del tamaño de la matriz**.
+- Interacción lenguaje × N (tiempo): p = 2.76e-116; (log10): p = 2.54e-24. La diferencia entre lenguajes **depende del tamaño de la matriz** (ambos modelos).
 
 ## 9. Figuras
 
