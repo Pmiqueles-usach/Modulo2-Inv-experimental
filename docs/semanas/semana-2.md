@@ -51,7 +51,26 @@
 Ver [results/analysis/tables/descriptivos.md](../../results/analysis/tables/descriptivos.md) y la
 sección 11 del README.
 
-## Guion de presentación
+## Presentación y demostración en vivo
+
+- Presentación (10 min, con notas del orador por diapositiva):
+  [Presentacion_Semana_2_Implementacion_y_Ejecucion.pptx](../presentaciones/Presentacion_Semana_2_Implementacion_y_Ejecucion.pptx)
+- Compilación y ejecución en vivo: `scripts/semana2.sh` (≈30 s; pausa entre lenguajes).
+
+| Tiempo | Diapositiva | Contenido |
+|---|---|---|
+| 0:00–0:30 | 1 | Portada |
+| 0:30–1:30 | 2 | Seis requisitos → seis decisiones |
+| 1:30–2:30 | 3 | Flujo común e interfaz CLI |
+| 2:30–3:30 | 4 | Generador SplitMix64 |
+| 3:30–5:00 | 5 | Función `multiplicar()` en los 4 lenguajes |
+| 5:00–6:00 | 6 | Medición del tiempo |
+| 6:00–6:45 | 7 | Equivalencia: checksums idénticos |
+| 6:45–8:30 | 8 | **Demo en vivo**: `scripts/semana2.sh` |
+| 8:30–9:30 | 9 | Primeros resultados |
+| 9:30–10:00 | 10 | Cierre y cómo ejecutarlo |
+
+## Guion de presentación (resumen)
 
 1. Código lado a lado de la función `multiplicar` en los 4 lenguajes (idénticas).
 2. Generador SplitMix64 y por qué no usar el RNG nativo.

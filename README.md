@@ -167,7 +167,21 @@ e indica el comando `build` exacto.
 
 `snakemake --dag | dot -Tpng > dag.png` genera el grafo real.
 
-## 9. Ejecución manual por contenedor (sin Snakemake)
+## 9. Ejecución local sin contenedores (Semana 2)
+
+Si tiene instalados `g++`, Go ≥ 1.20, Java ≥ 11 y Python ≥ 3.9, puede compilar y ejecutar
+las 4 implementaciones directamente:
+
+```bash
+scripts/semana2.sh                         # demo: N = 200,400 · 3 repeticiones (≈30 s)
+scripts/semana2.sh 500,1000,1500 10 42     # experimento completo (≈1,5 h, dominado por Python)
+```
+
+El script compila cada programa, lo ejecuta, muestra los CSV y los tiempos medios, y verifica
+que los 4 checksums sean idénticos. Los resultados quedan en `results_semana2/`. Sin `javac`,
+usa `java MatMul.java` (modo archivo fuente).
+
+## 9b. Ejecución manual por contenedor (sin Snakemake)
 
 ```bash
 mkdir -p results/raw results/verification
