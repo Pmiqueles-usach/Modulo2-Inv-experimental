@@ -22,3 +22,8 @@ artifact-*.zip
 
 # Cachés generadas por contenedores (matplotlib, etc.)
 .cache/
+
+# Binarios y CSV generados al seguir LEEME.md
+/matmul_cpp
+/matmul_go
+/*.csv
