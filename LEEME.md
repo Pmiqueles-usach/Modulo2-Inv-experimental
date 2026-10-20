@@ -101,6 +101,10 @@ Python es unas 200 veces más lento que C++:
 - **Experimento oficial:** `500,1000,1500 10 42`. Python tarda más de 1 hora; ya está ejecutado
   y sus resultados están en `results/raw/`.
 
+## ¿Quiere entender el código?
+
+Vea [docs/EXPLICACION_CODIGO.md](docs/EXPLICACION_CODIGO.md): explica cada parte en relación con lo que pide la actividad.
+
 ## Requisitos
 
 `g++`, Go 1.20 o superior, Java 11 o superior y Python 3.9 o superior.

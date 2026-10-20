@@ -27,3 +27,4 @@ artifact-*.zip
 /matmul_cpp
 /matmul_go
 /*.csv
+.~lock.*#
