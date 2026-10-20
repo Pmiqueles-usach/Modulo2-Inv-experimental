@@ -28,3 +28,6 @@ artifact-*.zip
 /matmul_go
 /*.csv
 .~lock.*#
+
+# Instrucciones locales del asistente Claude Code (no forman parte del artifact)
+.claude/
