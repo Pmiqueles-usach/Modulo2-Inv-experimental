@@ -54,7 +54,7 @@ ACM define tres badges independientes: **Artifacts Evaluated** (Functional o Reu
 | Requisito | Acción | Estado |
 |---|---|---|
 | Repositorio de archivo con plan de permanencia | Zenodo (CERN) mediante integración GitHub → release `v1.0.0` | ⏳ |
-| DOI | Copiar DOI al README, CITATION.cff y `docs/semanas/semana-5.md` | ⏳ |
+| DOI | Copiar DOI al README, CITATION.cff y README §13.5 | ⏳ |
 | Contenido mínimo exigido por el módulo | Ver checklist en `docs/ZENODO.md` | ✅ preparado |
 
 ### 2.4 Results Validated – Reproduced (evaluación cruzada, Semana 5)

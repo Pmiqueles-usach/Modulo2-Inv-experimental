@@ -18,7 +18,7 @@
    - `README.md` (badge de la línea 3 y sección 14),
    - `CITATION.cff` (campo `doi`),
    - `docs/DATASHEET_FAIR.md` (sección 1),
-   - `docs/semanas/semana-5.md`,
+   - `README.md` §13.5 (tabla de entregables de la semana 5),
    - `docs/ACM_BADGES.md` (tabla 2.3).
 7. Commit `docs: agrega DOI de Zenodo` y push (la versión archivada no cambia; el DOI queda en
    GitHub para quienes lleguen desde ahí).
