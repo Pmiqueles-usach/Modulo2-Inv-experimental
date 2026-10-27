@@ -15,10 +15,9 @@
 5. Zenodo archiva automáticamente la release usando los metadatos de `.zenodo.json`
    y asigna un **DOI de versión** y un **concept DOI**.
 6. Copiar el DOI en:
-   - `README.md` (badge de la línea 3 y sección 14),
+   - `README.md` (badge de la línea 3, §7.5 y §12),
    - `CITATION.cff` (campo `doi`),
    - `docs/DATASHEET_FAIR.md` (sección 1),
-   - `README.md` §13.5 (tabla de entregables de la semana 5),
    - `docs/ACM_BADGES.md` (tabla 2.3).
 7. Commit `docs: agrega DOI de Zenodo` y push (la versión archivada no cambia; el DOI queda en
    GitHub para quienes lleguen desde ahí).

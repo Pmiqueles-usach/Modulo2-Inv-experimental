@@ -56,10 +56,10 @@ semana1() {
     ejecutar "git log --oneline --decorate | tail -n 8"
     pausa
     paso "Pregunta de investigación e hipótesis (README.md)"
-    ejecutar "sed -n '/^## 2. Pregunta/,/^## 4. Variables/p' README.md"
+    ejecutar "sed -n '/^### 3.2 Pregunta/,/^### 3.4 Variables/p' README.md"
     pausa
     paso "Variables y diseño factorial 4 × 3 × 10"
-    ejecutar "sed -n '/^## 4. Variables/,/^## 6. Estructura/p' README.md"
+    ejecutar "sed -n '/^### 3.4 Variables/,/^### 3.6 Estructura/p' README.md"
     pausa
 }
 

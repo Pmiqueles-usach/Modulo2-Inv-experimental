@@ -23,7 +23,7 @@ ACM define tres badges independientes: **Artifacts Evaluated** (Functional o Reu
 
 | Criterio ACM | Evidencia en el artifact | Estado |
 |---|---|---|
-| **Documented**: inventario de artifacts y descripción suficiente para ejercitarlos | README §6 (inventario), §8–9 (instrucciones), `docs/PROTOCOLO.md` | ✅ |
+| **Documented**: inventario de artifacts y descripción suficiente para ejercitarlos | README §3.6 (inventario), §5.4 y §6.4 (instrucciones paso a paso), `docs/PROTOCOLO.md` | ✅ |
 | **Consistent**: relevantes y contribuyen a los resultados principales | Cada archivo participa en la cadena código → CSV → análisis | ✅ |
 | **Complete**: todos los componentes incluidos | Código de 4 lenguajes, 5 Dockerfile, scripts, configuración; sin componentes propietarios | ✅ |
 | **Exercisable**: los scripts se ejecutan y los datos se pueden manipular | `docker run` por lenguaje genera `<lang>.csv`; CSV legibles con cualquier herramienta | ✅ |
@@ -40,7 +40,7 @@ ACM define tres badges independientes: **Artifacts Evaluated** (Functional o Reu
 | Automatización completa | `workflow/Snakefile`: un único comando ejecuta contenedores → CSV → `benchmark.csv` → ANOVA/Tukey → tablas/figuras | ✅ |
 | Parametrización | `config/config.yaml` (N, repeticiones, semilla, motor, directorio) sobrescribible con `--config` | ✅ |
 | Entornos fijados | Imágenes base con versión exacta; dependencias de análisis con versión exacta (`docker/analysis/requirements.txt`) | ✅ |
-| Interfaz común y extensible | Mismo CLI para los 4 programas; guía para agregar lenguajes (README §12) | ✅ |
+| Interfaz común y extensible | Mismo CLI para los 4 programas; guía para agregar lenguajes (README §10) | ✅ |
 | Normas de la comunidad | Estructura estándar de Snakemake (`workflow/`, `config/`, perfiles), OCI labels, CITATION.cff, licencias SPDX, datasheet FAIR | ✅ |
 | Prueba rápida | `results_dir=results_smoke 'sizes=[50,100]'` | ✅ |
 | Portabilidad del motor | Docker o Podman sin cambios en los Dockerfile | ✅ |
@@ -54,7 +54,7 @@ ACM define tres badges independientes: **Artifacts Evaluated** (Functional o Reu
 | Requisito | Acción | Estado |
 |---|---|---|
 | Repositorio de archivo con plan de permanencia | Zenodo (CERN) mediante integración GitHub → release `v1.0.0` | ⏳ |
-| DOI | Copiar DOI al README, CITATION.cff y README §13.5 | ⏳ |
+| DOI | Copiar DOI al README, CITATION.cff y README §7.5 | ⏳ |
 | Contenido mínimo exigido por el módulo | Ver checklist en `docs/ZENODO.md` | ✅ preparado |
 
 ### 2.4 Results Validated – Reproduced (evaluación cruzada, Semana 5)
