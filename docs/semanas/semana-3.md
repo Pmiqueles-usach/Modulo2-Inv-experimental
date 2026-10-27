@@ -42,6 +42,21 @@ docker build -f docker/cpp/Dockerfile -t matmul-cpp:1.0 .      # (y go, java, py
 docker images | grep matmul
 scripts/run_container.sh cpp 500 2 42 results_demo             # demostración corta
 head results_demo/raw/cpp.csv
+
+docker build -f docker/go/Dockerfile -t matmul-cpp:1.0 .      # (y go, java, python)
+docker images | grep matmul
+scripts/run_container.sh go 500 2 42 results_demo             # demostración corta
+head results_demo/raw/go.csv
+
+docker build -f docker/java/Dockerfile -t matmul-cpp:1.0 .      # (y go, java, python)
+docker images | grep matmul
+scripts/run_container.sh java 500 2 42 results_demo             # demostración corta
+head results_demo/raw/java.csv
+
+docker build -f docker/python/Dockerfile -t matmul-cpp:1.0 .      # (y go, java, python)
+docker images | grep matmul
+scripts/run_container.sh python 500 2 42 results_demo             # demostración corta
+head results_demo/raw/python.csv
 ```
 
 ## Autoevaluación Functional
