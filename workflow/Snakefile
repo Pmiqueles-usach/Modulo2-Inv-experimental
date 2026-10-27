@@ -1,12 +1,13 @@
 # Pipeline reproducible: benchmark naive de multiplicación de matrices NxN
 # en C++, Go, Java y Python.
 #
-# Requisito previo: construir MANUALMENTE las imágenes (ver README.md, sección 6):
+# Requisito previo: construir MANUALMENTE las imágenes (ver README.md, sección 8):
 #   docker build -f docker/<lang>/Dockerfile -t matmul-<lang>:1.0 .
 #
 # Ejecución completa (desde la raíz del repositorio):
 #   snakemake                                  # usa workflow/profiles/default
 #   snakemake --config engine=podman           # con Podman en vez de Docker
+#   .venv\Scripts\snakemake                    # Windows (PowerShell + Docker Desktop)
 #
 # Grafo de dependencias:
 #   run_benchmark (x4) ─► merge ─► analysis ─► tablas/figuras/reporte
@@ -17,6 +18,11 @@
 # (sin archivos marca: así reconstruir el reporte no obliga a repetir los benchmarks).
 
 import os
+import shlex
+import subprocess
+import sys
+
+from snakemake.exceptions import WorkflowError
 
 configfile: "config/config.yaml"
 
@@ -29,26 +35,65 @@ SEED = int(config["seed"])
 ALPHA = float(config["alpha"])
 R = config["results_dir"]
 
-# Opciones para que los archivos generados pertenezcan al usuario del host.
-USER_OPTS = "--userns=keep-id" if ENGINE.startswith("podman") else f"--user {os.getuid()}:{os.getgid()}"
+# Los contenedores se lanzan con subprocess (sin shell), de modo que el mismo Snakefile
+# funciona en Linux, macOS y Windows (Docker Desktop), incluso con espacios en las rutas.
+MOTOR = shlex.split(ENGINE)
+ES_WINDOWS = os.name == "nt"
+
+
+def opciones_usuario():
+    """Opciones para que los archivos generados pertenezcan al usuario del host.
+
+    En Windows (Docker Desktop) no aplican: los archivos montados ya son del usuario.
+    """
+    if ES_WINDOWS:
+        return []
+    if os.path.basename(MOTOR[0]).startswith("podman"):
+        return ["--userns=keep-id"]
+    return ["--user", f"{os.getuid()}:{os.getgid()}"]
+
+
+def volumen(ruta_host, ruta_contenedor):
+    """Montaje de un directorio del host; ':z' reetiqueta para SELinux (Fedora/RHEL)."""
+    sufijo = "" if ES_WINDOWS else ":z"
+    return ["-v", f"{os.path.abspath(ruta_host)}:{ruta_contenedor}{sufijo}"]
 
 
 def requiere_imagen(img):
-    """Fragmento shell que falla con un mensaje claro si la imagen no fue construida.
+    """Falla con un mensaje claro si la imagen no fue construida localmente.
 
     No se permite descargar imágenes del benchmark desde registros (Docker Hub, GHCR, etc.).
     """
-    return (
-        f"if ! {ENGINE} image inspect matmul-{img}:{TAG} > /dev/null 2>&1; then "
-        f"echo 'ERROR: falta la imagen matmul-{img}:{TAG}. Constrúyala manualmente: "
-        f"{ENGINE} build -f docker/{img}/Dockerfile -t matmul-{img}:{TAG} .' >&2; exit 1; fi; "
+    nombre = f"matmul-{img}:{TAG}"
+    inspeccion = subprocess.run(
+        MOTOR + ["image", "inspect", nombre],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
+    if inspeccion.returncode != 0:
+        raise WorkflowError(
+            f"Falta la imagen {nombre}. Constrúyala manualmente:\n"
+            f"  {ENGINE} build -f docker/{img}/Dockerfile -t {nombre} ."
+        )
 
 
-ANALYSIS = requiere_imagen("analysis") + (
-    f"{ENGINE} run --rm {USER_OPTS} --network none "
-    f"-v {os.getcwd()}:/work:z -w /work matmul-analysis:{TAG}"
-)
+def ejecutar(cmd, log=None):
+    """Ejecuta un comando, lo muestra y (opcionalmente) guarda su stderr en un log."""
+    print("$ " + " ".join(shlex.quote(c) for c in cmd), file=sys.stderr)
+    if log is None:
+        subprocess.run(cmd, check=True)
+    else:
+        with open(log, "w", encoding="utf-8") as f:
+            subprocess.run(cmd, check=True, stderr=f)
+
+
+def analisis(*args):
+    """Ejecuta un script de scripts/ dentro de la imagen de análisis (versiones fijadas)."""
+    requiere_imagen("analysis")
+    rutas = [str(a).replace("\\", "/") for a in args]  # rutas POSIX dentro del contenedor
+    ejecutar(
+        MOTOR + ["run", "--rm"] + opciones_usuario() + ["--network", "none"]
+        + volumen(".", "/work") + ["-w", "/work", f"matmul-analysis:{TAG}", "python"] + rutas
+    )
 
 
 rule all:
@@ -70,18 +115,16 @@ rule run_benchmark:
         f"{R}/logs/{{lang}}.log",
     resources:
         benchmark_slot=1,
-    params:
-        check=lambda wc: requiere_imagen(wc.lang),
-    shell:
-        f"""
-        {{params.check}}
-        {ENGINE} run --rm {USER_OPTS} --network none \
-            -v {os.getcwd()}/{R}:/results:z \
-            matmul-{{wildcards.lang}}:{TAG} \
-            /results/raw/{{wildcards.lang}}.csv {SIZES} {REPS} {SEED} \
-            /results/verification/{{wildcards.lang}}_checksum.csv \
-            2> {{log}}
-        """
+    run:
+        lang = wildcards.lang
+        requiere_imagen(lang)
+        ejecutar(
+            MOTOR + ["run", "--rm"] + opciones_usuario() + ["--network", "none"]
+            + volumen(R, "/results")
+            + [f"matmul-{lang}:{TAG}", f"/results/raw/{lang}.csv", SIZES, str(REPS), str(SEED),
+               f"/results/verification/{lang}_checksum.csv"],
+            log=log[0],
+        )
 
 
 # Integra los cuatro CSV en benchmark.csv (dentro del contenedor de análisis).
@@ -90,8 +133,8 @@ rule merge:
         csvs=expand(f"{R}/raw/{{lang}}.csv", lang=LANGS),
     output:
         f"{R}/benchmark.csv",
-    shell:
-        f"{ANALYSIS} python scripts/merge_results.py {{output}} {{input.csvs}}"
+    run:
+        analisis("scripts/merge_results.py", output[0], *input.csvs)
 
 
 # Comprueba que las cuatro implementaciones producen la misma matriz resultado.
@@ -100,8 +143,8 @@ rule verify_equivalence:
         checksums=expand(f"{R}/verification/{{lang}}_checksum.csv", lang=LANGS),
     output:
         f"{R}/verification/equivalence_report.md",
-    shell:
-        f"{ANALYSIS} python scripts/verify_equivalence.py {{output}} {{input.checksums}}"
+    run:
+        analisis("scripts/verify_equivalence.py", output[0], *input.checksums)
 
 
 # ANOVA de dos factores con interacción, Tukey HSD, tablas y gráficos.
@@ -115,13 +158,13 @@ rule analysis:
         tukey=f"{R}/analysis/tables/tukey_lenguaje_por_N_log.csv",
         boxplot=f"{R}/analysis/figures/boxplot_tiempos.png",
         interaccion=f"{R}/analysis/figures/interaccion_lenguaje_N.png",
-    shell:
-        f"{ANALYSIS} python scripts/analysis.py {{input.bench}} {R}/analysis {ALPHA}"
+    run:
+        analisis("scripts/analysis.py", input.bench, f"{R}/analysis", ALPHA)
 
 
 # Registra hardware, sistema operativo y versiones de compiladores/VM.
 rule environment:
     output:
         f"{R}/environment/environment.md",
-    shell:
-        f"scripts/collect_env.sh {{output}} '{ENGINE}' {TAG}"
+    run:
+        ejecutar([sys.executable, "scripts/collect_env.py", output[0], ENGINE, TAG])

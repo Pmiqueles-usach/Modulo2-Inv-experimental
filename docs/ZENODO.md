@@ -47,4 +47,4 @@ Subir `artifact-v1.0.0.zip` en *New upload*, tipo **Software**, completar metada
 | Licencia | `LICENSE` (MIT), `LICENSE-DATA` (CC BY 4.0) | ☐ |
 | Mini datasheet FAIR | `docs/DATASHEET_FAIR.md` | ☐ |
 
-Verificación automática del contenido: `scripts/check_artifact.sh`.
+Verificación automática del contenido: `python3 scripts/check_artifact.py` (Windows: `py scripts\check_artifact.py`).

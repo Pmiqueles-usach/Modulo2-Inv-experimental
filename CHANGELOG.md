@@ -4,6 +4,11 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [1.0.0] – Semana 5 (pendiente de publicación en Zenodo)
+- Reproducible también en **Windows** (Docker Desktop + PowerShell): el Snakefile lanza los
+  contenedores con `subprocess` (sin bash); `collect_env` y `check_artifact` pasan a Python;
+  nuevos `scripts/build_images.ps1`, `run_container.ps1` y `reproducir.ps1`; `.gitattributes`
+  fija finales de línea LF. Guía paso a paso en README §8b.
+- README §13: lo que pide el módulo, entregables, demostración y autoevaluación de cada semana.
 - Metadatos de publicación (`.zenodo.json`, `CITATION.cff`), licencias, datasheet FAIR.
 - Script `check_artifact.sh` y plantilla de evaluación cruzada.
 
