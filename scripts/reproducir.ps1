@@ -5,7 +5,7 @@
 #
 # Uso (PowerShell, desde la raiz del repositorio):
 #   powershell -ExecutionPolicy Bypass -File scripts\reproducir.ps1 -Rapido   # prueba (~3 min) -> results_smoke
-#   powershell -ExecutionPolicy Bypass -File scripts\reproducir.ps1           # experimento completo (~1,5 h) -> results_repro
+#   powershell -ExecutionPolicy Bypass -File scripts\reproducir.ps1           # experimento completo (~2,5 h) -> results_repro
 #
 # Opciones: -Engine podman   -Results <directorio>   -SinConstruir (si las imagenes ya existen)
 param(

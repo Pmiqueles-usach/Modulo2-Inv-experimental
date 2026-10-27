@@ -74,7 +74,7 @@ java src/java/MatMul.java java.csv 200 3 42
 py src/python/matmul.py python.csv 200 3 42
 ```
 
-Sin compiladores instalados, use Docker: [README §8b](README.md#8b-reproducción-en-windows-paso-a-paso).
+Sin compiladores instalados, use Docker: [README §2.2 y §5.4](README.md#54-paso-a-paso).
 
 ## Dónde quedan los resultados
 
@@ -122,4 +122,4 @@ Vea [docs/EXPLICACION_CODIGO.md](docs/EXPLICACION_CODIGO.md): explica cada parte
 ## Requisitos
 
 `g++`, Go 1.20 o superior, Java 11 o superior y Python 3.9 o superior.
-Sin estos compiladores se puede usar Docker: ver la sección 9b del [README.md](README.md).
+Sin estos compiladores se puede usar Docker: ver la sección 5.4 del [README.md](README.md#54-paso-a-paso).

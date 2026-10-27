@@ -7,8 +7,9 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 - Reproducible también en **Windows** (Docker Desktop + PowerShell): el Snakefile lanza los
   contenedores con `subprocess` (sin bash); `collect_env` y `check_artifact` pasan a Python;
   nuevos `scripts/build_images.ps1`, `run_container.ps1` y `reproducir.ps1`; `.gitattributes`
-  fija finales de línea LF. Guía paso a paso en README §8b.
-- README §13: lo que pide el módulo, entregables, demostración y autoevaluación de cada semana.
+  fija finales de línea LF. Guía paso a paso en el README (§2.2 y una sección por semana).
+- README reescrito como guía completa semana a semana (§3–§7), con paso a paso para Linux y
+  Windows, resultados esperados, guía de replicación desde cero (§9) y solución de problemas (§11).
 - Metadatos de publicación (`.zenodo.json`, `CITATION.cff`), licencias, datasheet FAIR.
 - Script `check_artifact.sh` y plantilla de evaluación cruzada.
 

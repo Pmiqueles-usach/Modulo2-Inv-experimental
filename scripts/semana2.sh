@@ -6,7 +6,7 @@
 #        scripts/semana2.sh 500,1000,1500 10 42   # experimento completo (~1,5 h por Python)
 #
 # Requisitos en el host: g++, go, java (JDK 11+; si no hay javac se usa el modo
-# "archivo fuente" de java) y python3. Si falta alguno, use Docker: README §9.
+# "archivo fuente" de java) y python3. Si falta alguno, use Docker: README §5.
 # Variable opcional: SIN_PAUSA=1 (no esperar Enter entre lenguajes).
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -21,7 +21,7 @@ NEGRITA=$'\e[1m'; AZUL=$'\e[34m'; VERDE=$'\e[32m'; ROJO=$'\e[31m'; GRIS=$'\e[90m
 titulo()   { printf '\n%s%s══ %s ══%s\n' "$NEGRITA" "$AZUL" "$*" "$FIN"; }
 ejecutar() { printf '%s$ %s%s\n' "$NEGRITA" "$*" "$FIN"; "$@"; }
 pausa()    { [ -n "${SIN_PAUSA:-}" ] || read -rp "${GRIS}[Enter para continuar]${FIN} " _; }
-falta()    { printf '%s✘ No se encontró %s en el host. Use Docker (README §9).%s\n' "$ROJO" "$1" "$FIN"; exit 1; }
+falta()    { printf '%s✘ No se encontró %s en el host. Use Docker (README §5).%s\n' "$ROJO" "$1" "$FIN"; exit 1; }
 
 /bin/rm -rf "$SALIDA"
 mkdir -p "$BIN" "$SALIDA/raw" "$SALIDA/verification"
