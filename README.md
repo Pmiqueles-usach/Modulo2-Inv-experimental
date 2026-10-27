@@ -18,6 +18,8 @@ Se construye siguiendo la política
 > La autoevaluación no equivale a un badge oficial: los badges ACM los otorga el comité de
 > evaluación de artifacts de cada conferencia/revista.
 
+> **¿Usa Windows?** Vea la [§8b Reproducción en Windows (paso a paso)](#8b-reproducción-en-windows-paso-a-paso).
+>
 > **¿Qué se hizo cada semana y cómo se demuestra?** Vea la [§13 Desarrollo por semana](#13-desarrollo-por-semana).
 >
 > **¿Solo quiere ejecutar los programas a mano?** Vea la guía simple [LEEME.md](LEEME.md).
@@ -85,6 +87,8 @@ Diseño **factorial completo 4 × 3** con **10 repeticiones** por celda → **12
 ├── workflow/Snakefile         ← pipeline de automatización
 ├── workflow/profiles/default/ ← perfil Snakemake (ejecución secuencial)
 ├── scripts/                   ← integración, verificación, análisis, registro del entorno
+│                                 (*.sh para Linux/macOS, *.ps1 para Windows, *.py en ambos)
+├── .gitattributes             ← finales de línea LF fijos (clonado correcto en Windows)
 ├── results/
 │   ├── raw/{cpp,go,java,python}.csv   ← resultados por lenguaje
 │   ├── benchmark.csv                  ← resultados integrados
@@ -108,8 +112,11 @@ Diseño **factorial completo 4 × 3** con **10 repeticiones** por celda → **12
 | Python | ≥ 3.11 (host) | solo para instalar Snakemake |
 | Snakemake | 9.27.0 (`requirements-host.txt`) | pipeline |
 | Linux x86_64 | Fedora 42 | (cualquier Linux con Docker debería funcionar) |
+| Windows 10/11 x86_64 | Docker Desktop con WSL 2 + PowerShell | ver §8b |
 
 No se requiere instalar compiladores ni librerías en el host: todo se ejecuta en contenedores.
+El pipeline lanza los contenedores desde Python (sin bash), por lo que funciona igual en Linux,
+macOS y Windows.
 Hardware: ≥ 4 GB RAM libre; ~3 GB de disco para las imágenes. Duración total ≈ 1,5 h
 (dominada por Python con N = 1500).
 
@@ -171,6 +178,124 @@ e indica el comando `build` exacto.
 
 `snakemake --dag | dot -Tpng > dag.png` genera el grafo real.
 
+## 8b. Reproducción en Windows (paso a paso)
+
+El artifact funciona igual en Windows 10/11 (x86_64) con **Docker Desktop**: los contenedores
+son los mismos (Linux), el pipeline Snakemake lanza Docker sin depender de bash y los scripts
+auxiliares tienen versión PowerShell (`scripts\*.ps1`) o están escritos en Python.
+
+### Paso 1 · Instalar las herramientas (una sola vez)
+
+| Herramienta | Dónde | Nota |
+|---|---|---|
+| Docker Desktop | https://www.docker.com/products/docker-desktop/ | Durante la instalación, dejar marcado **"Use WSL 2"**. Reiniciar si lo pide. |
+| Git para Windows | https://git-scm.com/download/win | Opciones por defecto. |
+| Python ≥ 3.11 | https://www.python.org/downloads/ | Marcar **"Add python.exe to PATH"**. Solo se usa para instalar Snakemake. |
+
+Abra **Docker Desktop** y espere a que indique *Engine running* (icono de la ballena en verde).
+
+### Paso 2 · Comprobar las herramientas (PowerShell)
+
+Abra **PowerShell** (menú Inicio → "PowerShell") y ejecute:
+
+```powershell
+docker --version              # Docker version 2x.x ...
+docker run --rm hello-world   # debe imprimir "Hello from Docker!"
+git --version
+py --version                  # o: python --version  (≥ 3.11)
+```
+
+### Paso 3 · Obtener el artifact
+
+```powershell
+cd $HOME\Documents
+git clone https://github.com/Pmiqueles-usach/Modulo2-Inv-experimental.git
+cd Modulo2-Inv-experimental
+```
+
+> Si descarga el artifact desde Zenodo (ZIP), descomprímalo y abra PowerShell dentro de la
+> carpeta descomprimida. El archivo `.gitattributes` asegura finales de línea LF al clonar.
+
+### Paso 4 · Opción A: todo con un solo comando
+
+```powershell
+# Prueba rápida (≈3 min + construcción de imágenes la primera vez) → results_smoke\
+powershell -ExecutionPolicy Bypass -File scripts\reproducir.ps1 -Rapido
+
+# Experimento completo: N = 500, 1000, 1500 · 10 repeticiones (≈1,5 h) → results_repro\
+powershell -ExecutionPolicy Bypass -File scripts\reproducir.ps1
+```
+
+`reproducir.ps1` (1) verifica Docker y Python, (2) construye manualmente las 5 imágenes desde los
+Dockerfile, (3) instala Snakemake en `.venv`, (4) ejecuta el pipeline y (5) corre
+`check_artifact.py` y muestra la razón de tiempos respecto de C++. Si las imágenes ya existen,
+agregue `-SinConstruir`.
+
+### Paso 4 · Opción B: paso a paso, comando por comando
+
+```powershell
+# 1) Construir MANUALMENTE las 5 imágenes (la primera vez descarga las imágenes base: 5–15 min)
+docker build -f docker/cpp/Dockerfile      -t matmul-cpp:1.0 .
+docker build -f docker/go/Dockerfile       -t matmul-go:1.0 .
+docker build -f docker/java/Dockerfile     -t matmul-java:1.0 .
+docker build -f docker/python/Dockerfile   -t matmul-python:1.0 .
+docker build -f docker/analysis/Dockerfile -t matmul-analysis:1.0 .
+docker images --filter "reference=matmul-*"
+#    (equivalente: powershell -ExecutionPolicy Bypass -File scripts\build_images.ps1)
+
+# 2) Instalar Snakemake en un entorno virtual
+py -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements-host.txt
+
+# 3) Prueba rápida del pipeline completo (≈1,5 min)
+.venv\Scripts\snakemake.exe --config results_dir=results_smoke "sizes=[50,100]" repetitions=3
+
+# 4) Experimento completo (≈1,5 h) en un directorio nuevo
+.venv\Scripts\snakemake.exe --config results_dir=results_repro
+
+# 5) Verificar el contenido y la estructura de los resultados
+.venv\Scripts\python.exe scripts\check_artifact.py results_repro
+```
+
+### Paso 5 · Comparar con los resultados publicados
+
+```powershell
+Get-Content results_repro\analysis\tables\speedup.md      # esta ejecución
+Get-Content results\analysis\tables\speedup.md            # publicados
+Get-Content results_repro\verification\equivalence_report.md
+start results_repro\analysis\figures\interaccion_lenguaje_N.png
+```
+
+Criterio de reproducción (ACM *Results Reproduced*, ver
+[docs/ACM_BADGES.md §2.4](docs/ACM_BADGES.md)): **checksums idénticos**, mismo orden de los
+lenguajes y mismas decisiones estadísticas (rechazo de H₀, interacción significativa). Los
+segundos absolutos cambian con el hardware y no deben coincidir.
+
+### Problemas frecuentes en Windows
+
+| Síntoma | Solución |
+|---|---|
+| `... cannot be loaded because running scripts is disabled` | Ejecutar los `.ps1` con `powershell -ExecutionPolicy Bypass -File ...` (no cambia la configuración del equipo). |
+| `error during connect ... dockerDesktopLinuxEngine` / `docker: ... pipe` | Docker Desktop no está abierto: iniciarlo y esperar *Engine running*. |
+| `py` no se reconoce | Usar `python` en su lugar, o reinstalar Python marcando *Add python.exe to PATH*. |
+| `snakemake.exe` no se reconoce | Se omitió el paso 2: `.venv\Scripts\python.exe -m pip install -r requirements-host.txt`. |
+| `Falta la imagen matmul-<x>:1.0` | Construirla (paso 4B.1). El pipeline nunca descarga imágenes del benchmark. |
+| Los CSV quedan vacíos o el volumen no se monta | Docker Desktop → *Settings → Resources → File sharing*: permitir la unidad (con WSL 2 viene activado). Evitar carpetas sincronizadas (OneDrive). |
+| Java termina con `OutOfMemoryError` | Docker Desktop → *Settings → Resources*: asignar ≥ 4 GB de memoria. |
+| Tiempos mucho mayores que los publicados | Esperado en otro hardware y por la capa de virtualización de WSL 2; cerrar otros programas durante la corrida. Lo que debe coincidir son los checksums y las decisiones estadísticas. |
+
+### Lista de verificación para probar el artifact
+
+| # | Comprobación | Resultado esperado |
+|---|---|---|
+| 1 | `docker run --rm hello-world` | "Hello from Docker!" |
+| 2 | `docker images --filter "reference=matmul-*"` | 5 imágenes `matmul-*:1.0` |
+| 3 | Prueba rápida (paso 4) | Snakemake termina con `9 of 9 steps (100%) done` |
+| 4 | `results_smoke\raw\` | `cpp.csv`, `go.csv`, `java.csv`, `python.csv` con cabecera `language,N,repetition,time_seconds` |
+| 5 | `results_smoke\verification\equivalence_report.md` | dice **EQUIVALENTES** |
+| 6 | `python scripts\check_artifact.py results_smoke` | todo `[ OK ]` y "Artifact completo." |
+| 7 | Experimento completo | 120 filas en `results_repro\benchmark.csv`; mismas decisiones estadísticas que `results\` |
+
 ## 9. Ejecución local sin contenedores (Semana 2)
 
 Si tiene instalados `g++`, Go ≥ 1.20, Java ≥ 11 y Python ≥ 3.9, puede compilar y ejecutar
@@ -199,6 +324,18 @@ Cada imagen ejecuta por defecto N = 500, 1000, 1500 con 10 repeticiones y semill
 `results/raw/<lang>.csv` y `results/verification/<lang>_checksum.csv`. Los argumentos se pueden
 cambiar: `docker run ... matmul-go:1.0 /results/raw/go.csv 200,400 5 42` o con
 `scripts/run_container.sh <lang> [tamaños] [reps] [semilla]`.
+
+En **Windows (PowerShell)** se omite `--user` y `:z`:
+
+```powershell
+New-Item -ItemType Directory -Force results\raw, results\verification | Out-Null
+docker run --rm --network none -v "${PWD}\results:/results" matmul-cpp:1.0
+docker run --rm --network none -v "${PWD}\results:/results" matmul-go:1.0
+docker run --rm --network none -v "${PWD}\results:/results" matmul-java:1.0
+docker run --rm --network none -v "${PWD}\results:/results" matmul-python:1.0
+# o, por lenguaje y con otros parámetros:
+powershell -ExecutionPolicy Bypass -File scripts\run_container.ps1 go 200,400 5 42 results_demo
+```
 
 ### Demostración en consola (clase)
 
@@ -297,9 +434,10 @@ etiqueta git (`git checkout semana-N` muestra el estado del artifact en ese mome
 | [5](#135-semana-5--publicación-zenodo-y-evaluación-cruzada) | Zenodo (DOI) y evaluación cruzada | Available + Reproduced | `v1.0.0` |
 
 > En los comandos, `docker` puede reemplazarse por `podman` (o por
-> `podman --cgroup-manager=cgroupfs`, ver §8). La demostración de todas las semanas está en
-> `scripts/demo.sh <semana>`: muestra cada comando antes de ejecutarlo, hace pausa entre pasos y
-> escribe solo en `results_demo/`.
+> `podman --cgroup-manager=cgroupfs`, ver §8). En Linux, la demostración de todas las semanas
+> está en `scripts/demo.sh <semana>`: muestra cada comando antes de ejecutarlo, hace pausa entre
+> pasos y escribe solo en `results_demo/`. Cada semana incluye además los comandos equivalentes
+> para **Windows (PowerShell)**.
 
 ### 13.1 Semana 1 – Diseño experimental, GitHub y documentación
 
@@ -334,6 +472,9 @@ git log --oneline --decorate | tail -n 8     # historial y etiquetas por semana
 sed -n '/^## 2. Pregunta/,/^## 6. Estructura/p' README.md   # pregunta, hipótesis, variables, diseño
 scripts/demo.sh 1                            # lo mismo, guiado
 ```
+
+Windows (PowerShell): `git remote get-url origin`, `git log --oneline --decorate` y abrir el
+README en GitHub (§1–5).
 
 **Comentarios sobre ACM Artifact Review & Badging**
 
@@ -396,6 +537,18 @@ head -n 4 cpp.csv go.csv java.csv python.csv
 # Todo junto, con tiempos medios y verificación de checksums (≈30 s)
 scripts/semana2.sh
 ```
+
+Windows (PowerShell, con MinGW `g++`, Go, JDK y Python instalados):
+
+```powershell
+g++ -O2 -ffp-contract=off -o matmul_cpp.exe src/cpp/matmul.cpp; .\matmul_cpp.exe cpp.csv 200 3 42
+cd src/go; go build -o ..\..\matmul_go.exe .; cd ..\..; .\matmul_go.exe go.csv 200 3 42
+java src/java/MatMul.java java.csv 200 3 42
+py src/python/matmul.py python.csv 200 3 42
+Get-Content cpp.csv, go.csv, java.csv, python.csv
+```
+
+Sin compiladores en el host, la misma ejecución se hace con los contenedores (semana 3).
 
 ### 13.3 Semana 3 – Entorno reproducible (Docker) y evaluación Functional
 
@@ -460,7 +613,35 @@ cat results_demo/verification/*_checksum.csv | grep -v '^language' | sort -t, -k
 ```
 
 Guiado y con pausas (≈20 s de ejecución): `scripts/demo.sh 3`. Un solo lenguaje con otros
-parámetros: `scripts/run_container.sh java 300 3 42 results_demo`.
+parámetros: `scripts/run_container.sh java 300 3 42 results_demo`. Si el usuario no pertenece al
+grupo `docker`, anteponer `sudo` a cada comando `docker` (o usar Podman).
+
+Windows (PowerShell + Docker Desktop):
+
+```powershell
+# 1) Dockerfile
+Get-Content docker/cpp/Dockerfile
+
+# 2) Construcción MANUAL de las 4 imágenes
+docker build -f docker/cpp/Dockerfile    -t matmul-cpp:1.0 .
+docker build -f docker/go/Dockerfile     -t matmul-go:1.0 .
+docker build -f docker/java/Dockerfile   -t matmul-java:1.0 .
+docker build -f docker/python/Dockerfile -t matmul-python:1.0 .
+docker images --filter "reference=matmul-*"
+
+# 3) Ejecución de cada contenedor → un CSV por lenguaje
+New-Item -ItemType Directory -Force results_demo\raw, results_demo\verification | Out-Null
+foreach ($lang in "cpp", "go", "java", "python") {
+  docker run --rm --network none -v "${PWD}\results_demo:/results" matmul-${lang}:1.0 `
+    /results/raw/$lang.csv 200,400 3 42 /results/verification/${lang}_checksum.csv
+}
+
+# 4) Misma estructura en los 4 CSV
+Get-ChildItem results_demo\raw\*.csv | ForEach-Object { "== $($_.Name)"; Get-Content $_ -TotalCount 4 }
+
+# 5) Checksum idéntico en los 4 lenguajes (repetición 1 de cada N)
+Get-Content results_demo\verification\*_checksum.csv | Where-Object { $_ -notmatch "^language" -and $_.Split(",")[2] -eq "1" } | Sort-Object { [int]$_.Split(",")[1] }
+```
 
 **Autoevaluación *Functional***
 
@@ -530,6 +711,17 @@ rm -f results_demo/benchmark.csv
 scripts/demo.sh 4                                   # lo mismo, guiado
 ```
 
+Windows (PowerShell; requiere los pasos 1–2 de §8b):
+
+```powershell
+.venv\Scripts\snakemake.exe -n
+.venv\Scripts\snakemake.exe --config results_dir=results_demo "sizes=[100,200]" repetitions=3
+Get-Content results_demo\benchmark.csv -TotalCount 10
+Get-Content results_demo\analysis\reporte_estadistico.md
+Remove-Item results_demo\benchmark.csv
+.venv\Scripts\snakemake.exe --config results_dir=results_demo "sizes=[100,200]" repetitions=3   # solo recalcula lo necesario
+```
+
 ### 13.5 Semana 5 – Publicación (Zenodo) y evaluación cruzada
 
 **Lo que pide el módulo**
@@ -547,7 +739,8 @@ scripts/demo.sh 4                                   # lo mismo, guiado
 |---|---|---|
 | Metadatos Zenodo | [.zenodo.json](.zenodo.json), [CITATION.cff](CITATION.cff) | ✅ |
 | Procedimiento de publicación | [docs/ZENODO.md](docs/ZENODO.md) | ✅ |
-| Verificación de contenido mínimo | [scripts/check_artifact.sh](scripts/check_artifact.sh) | ✅ |
+| Verificación de contenido mínimo | [scripts/check_artifact.py](scripts/check_artifact.py) | ✅ |
+| Reproducción en Windows con un comando | [scripts/reproducir.ps1](scripts/reproducir.ps1), §8b | ✅ |
 | Licencias | [LICENSE](LICENSE) (MIT), [LICENSE-DATA](LICENSE-DATA) (CC BY 4.0) | ✅ |
 | Mini datasheet FAIR | [docs/DATASHEET_FAIR.md](docs/DATASHEET_FAIR.md) | ✅ |
 | Release `v1.0.0` y DOI | Zenodo · **DOI: PENDIENTE** | ⏳ |
@@ -555,7 +748,7 @@ scripts/demo.sh 4                                   # lo mismo, guiado
 | Evaluación del artifact de un compañero | `docs/evaluacion-cruzada/evaluacion-<compañero>.md` | ⏳ |
 | Respuesta a la evaluación recibida | `docs/evaluacion-cruzada/respuesta-evaluacion.md` | ⏳ |
 
-**Pasos:** (1) `scripts/check_artifact.sh` → todo `[ OK ]`; (2) seguir
+**Pasos:** (1) `python3 scripts/check_artifact.py` → todo `[ OK ]`; (2) seguir
 [docs/ZENODO.md](docs/ZENODO.md) (release `v1.0.0` → DOI); (3) poner el DOI en este README,
 CITATION.cff y el datasheet; (4) entregar el DOI al compañero evaluador; (5) evaluar el artifact
 del compañero descargándolo **desde Zenodo**, con la plantilla.
@@ -563,11 +756,20 @@ del compañero descargándolo **desde Zenodo**, con la plantilla.
 **Demostración en línea de comandos**
 
 ```bash
-scripts/check_artifact.sh                           # checklist del contenido mínimo
+python3 scripts/check_artifact.py                   # checklist del contenido mínimo
 cat results/analysis/tables/speedup.md              # resultados oficiales
 sed -n '/^## 8. Decisión/,/^## 9/p' results/analysis/reporte_estadistico.md
 ls results/analysis/figures/
 scripts/demo.sh 5                                   # lo mismo, guiado
+```
+
+Windows (PowerShell):
+
+```powershell
+py scripts\check_artifact.py
+Get-Content results\analysis\tables\speedup.md
+Get-Content results\analysis\reporte_estadistico.md
+start results\analysis\figures\interaccion_lenguaje_N.png
 ```
 
 ## 14. Licencia y cita

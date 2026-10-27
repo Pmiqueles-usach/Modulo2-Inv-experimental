@@ -62,6 +62,20 @@ No se compila:
 python3 src/python/matmul.py python.csv 200 3 42
 ```
 
+## En Windows (PowerShell)
+
+Los mismos comandos, cambiando `./programa` por `.\programa.exe` (requiere MinGW `g++`, Go,
+JDK y Python instalados):
+
+```powershell
+g++ -O2 -o matmul_cpp.exe src/cpp/matmul.cpp; .\matmul_cpp.exe cpp.csv 200 3 42
+cd src/go; go build -o ..\..\matmul_go.exe .; cd ..\..; .\matmul_go.exe go.csv 200 3 42
+java src/java/MatMul.java java.csv 200 3 42
+py src/python/matmul.py python.csv 200 3 42
+```
+
+Sin compiladores instalados, use Docker: [README §8b](README.md#8b-reproducción-en-windows-paso-a-paso).
+
 ## Dónde quedan los resultados
 
 En el archivo indicado en ①, dentro de la carpeta desde donde se ejecutó el comando
