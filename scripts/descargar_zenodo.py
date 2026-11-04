@@ -25,6 +25,7 @@ import json
 import re
 import sys
 import tarfile
+import time
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -44,6 +45,19 @@ def obtener_json(url):
     req = urllib.request.Request(url, headers={"Accept": "application/json"})
     with urllib.request.urlopen(req, timeout=120) as resp:
         return json.loads(resp.read().decode("utf-8"))
+
+
+def descargar(url, ruta, intentos=4):
+    """Descarga con reintentos (Zenodo puede responder 5xx de forma transitoria)."""
+    for i in range(1, intentos + 1):
+        try:
+            urllib.request.urlretrieve(url, ruta)
+            return
+        except Exception as err:  # noqa: BLE001 - se informa y se reintenta
+            if i == intentos:
+                sys.exit(f"No se pudo descargar {url}: {err}")
+            print(f"  intento {i} falló ({err}); reintentando en {5 * i} s...")
+            time.sleep(5 * i)
 
 
 def extraer_seguro(archivo, destino):
@@ -94,7 +108,7 @@ def main():
         nombre = Path(f["key"]).name
         ruta = destino / "descargas" / nombre
         print(f"Descargando {nombre} ({f.get('size', 0)} bytes)...")
-        urllib.request.urlretrieve(f["links"]["self"], ruta)
+        descargar(f["links"]["self"], ruta)
         algoritmo, _, esperado = f.get("checksum", "md5:").partition(":")
         obtenido = hashlib.new(algoritmo or "md5", ruta.read_bytes()).hexdigest()
         ok = obtenido == esperado
