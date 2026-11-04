@@ -881,6 +881,7 @@ Los segundos absolutos **no** tienen que coincidir: dependen del hardware.
 | Plantilla de evaluación cruzada | [docs/evaluacion-cruzada/PLANTILLA_EVALUACION.md](docs/evaluacion-cruzada/PLANTILLA_EVALUACION.md) | ✅ |
 | Publicación por API y descarga para evaluar | [scripts/zenodo_publicar.py](scripts/zenodo_publicar.py), [scripts/descargar_zenodo.py](scripts/descargar_zenodo.py) | ✅ |
 | Release `v1.0.0` y DOI | [https://zenodo.org/records/23954259](https://zenodo.org/records/23954259) · **DOI: [10.5281/zenodo.23954259](https://doi.org/10.5281/zenodo.23954259)** | ✅ |
+| Presentación final (resultados, Zenodo y evaluación cruzada) | [docs/presentaciones/Presentacion_Semana_5_Publicacion_y_Evaluacion_Cruzada.pptx](docs/presentaciones/Presentacion_Semana_5_Publicacion_y_Evaluacion_Cruzada.pptx) | ⏳ completar con la evaluación cruzada |
 | Evaluación del artifact de un compañero | `docs/evaluacion-cruzada/evaluacion-<compañero>.md` | ⏳ |
 | Respuesta a la evaluación recibida | [docs/evaluacion-cruzada/respuesta-evaluacion.md](docs/evaluacion-cruzada/respuesta-evaluacion.md) | ⏳ |
 
