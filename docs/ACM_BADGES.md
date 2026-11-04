@@ -53,8 +53,8 @@ ACM define tres badges independientes: **Artifacts Evaluated** (Functional o Reu
 
 | Requisito | Acción | Estado |
 |---|---|---|
-| Repositorio de archivo con plan de permanencia | Zenodo (CERN) mediante integración GitHub → release `v1.0.0` | ⏳ |
-| DOI | Copiar DOI al README, CITATION.cff y README §7.5 | ⏳ |
+| Repositorio de archivo con plan de permanencia | Zenodo (CERN), release `v1.0.0` publicada por API (`scripts/zenodo_publicar.py`) | ✅ |
+| DOI | [10.5281/zenodo.23954259](https://doi.org/10.5281/zenodo.23954259) en README, CITATION.cff y datasheet FAIR | ✅ |
 | Contenido mínimo exigido por el módulo | Ver checklist en `docs/ZENODO.md` | ✅ preparado |
 
 ### 2.4 Results Validated – Reproduced (evaluación cruzada, Semana 5)
@@ -82,4 +82,5 @@ Plantilla: [evaluacion-cruzada/PLANTILLA_EVALUACION.md](evaluacion-cruzada/PLANT
 | 2026‑10‑17 | 1 | (discusión de criterios) | — | Criterios incorporados al diseño |
 | 2026‑10‑17 | 3 | Functional | Cumple | Ejecución verificada con Podman 5.8 (Docker CLI equivalente) |
 | 2026‑10‑17 | 4 | Reusable | Cumple | Pipeline completo verificado (`results_smoke` y `results`) |
-| — | 5 | Available / Reproduced | Pendiente | Requiere DOI y revisor externo |
+| 2026‑11‑04 | 5 | Available | Cumple | `v1.0.0` archivada en Zenodo, DOI 10.5281/zenodo.23954259 |
+| — | 5 | Reproduced | Pendiente | Lo dictamina el evaluador de la evaluación cruzada |

@@ -7,3 +7,6 @@
 *.pdf binary
 *.pptx binary
 *.zip binary
+
+# Excluidos del zip archivado en Zenodo (git archive): material del curso de terceros
+docs/ContenidoModulo_v4.pdf export-ignore

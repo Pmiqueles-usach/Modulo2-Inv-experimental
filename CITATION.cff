@@ -3,12 +3,13 @@ message: "Si utiliza este artifact, cítelo usando estos metadatos."
 title: "Benchmark reproducible de multiplicación de matrices NxN en C++, Go, Java y Python"
 type: software
 authors:
-  - alias: "Pmiqueles-usach"
+  - family-names: "Miqueles"
+    given-names: "Pier"
+    alias: "Pmiqueles-usach"
     affiliation: "Universidad de Santiago de Chile (USACH)"
-    # Completar: given-names, family-names, orcid
 version: 1.0.0
-# doi: 10.5281/zenodo.PENDIENTE
-date-released: "2026-10-17"
+doi: 10.5281/zenodo.23954259
+date-released: "2026-11-04"
 license: MIT
 repository-code: "https://github.com/Pmiqueles-usach/Modulo2-Inv-experimental"
 keywords:

@@ -1,16 +1,38 @@
 {
   "title": "Benchmark reproducible de multiplicación de matrices NxN en C++, Go, Java y Python",
   "upload_type": "software",
-  "description": "<p>Artifact científico reproducible (Módulo 2, curso Experimentación Computacional, Doctorado USACH) que compara el tiempo de ejecución del algoritmo naive de multiplicación de matrices NxN (N = 500, 1000, 1500; 10 repeticiones) implementado de forma equivalente en C++, Go, Java y Python. Incluye código fuente, Dockerfile, pipeline Snakemake, resultados por lenguaje (cpp.csv, go.csv, java.csv, python.csv), benchmark.csv consolidado, análisis ANOVA de dos factores con Tukey HSD, tablas, gráficos, licencia y mini datasheet FAIR. Preparado siguiendo ACM Artifact Review and Badging v1.1.</p>",
+  "description": "<p>Artifact científico reproducible (Módulo 2, curso Experimentación Computacional, Doctorado USACH) que compara el tiempo de ejecución del algoritmo naive de multiplicación de matrices NxN (N = 500, 1000, 1500; 10 repeticiones) implementado de forma equivalente en C++, Go, Java y Python. Incluye código fuente, Dockerfile, pipeline Snakemake, resultados por lenguaje (cpp.csv, go.csv, java.csv, python.csv), benchmark.csv consolidado, análisis ANOVA de dos factores con Tukey HSD, tablas, gráficos, licencia y mini datasheet FAIR. Preparado siguiendo ACM Artifact Review and Badging v1.1.</p><p>Instrucciones completas de reproducción (Linux y Windows) en README.md. Código bajo licencia MIT; datos, resultados, figuras y documentación bajo CC BY 4.0 (LICENSE-DATA).</p>",
   "creators": [
-    {"name": "Pmiqueles-usach", "affiliation": "Universidad de Santiago de Chile"}
+    {
+      "name": "Miqueles, Pier",
+      "affiliation": "Universidad de Santiago de Chile (USACH)"
+    }
   ],
   "license": "MIT",
   "access_right": "open",
   "language": "spa",
-  "keywords": ["reproducibility", "replicability", "benchmark", "matrix multiplication", "C++", "Go", "Java", "Python", "Docker", "Snakemake", "ACM artifact badging", "ANOVA"],
-  "related_identifiers": [
-    {"identifier": "https://github.com/Pmiqueles-usach/Modulo2-Inv-experimental", "relation": "isSupplementTo", "scheme": "url"}
+  "keywords": [
+    "reproducibility",
+    "replicability",
+    "benchmark",
+    "matrix multiplication",
+    "C++",
+    "Go",
+    "Java",
+    "Python",
+    "Docker",
+    "Snakemake",
+    "ACM artifact badging",
+    "ANOVA"
   ],
-  "version": "1.0.0"
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Pmiqueles-usach/Modulo2-Inv-experimental/tree/v1.0.0",
+      "relation": "isSupplementTo",
+      "scheme": "url",
+      "resource_type": "software"
+    }
+  ],
+  "version": "1.0.0",
+  "notes": "Curso Experimentación Computacional, Módulo 2 (Documentación de experimentos), Doctorado, Universidad de Santiago de Chile, 2026."
 }

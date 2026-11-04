@@ -31,3 +31,6 @@ artifact-*.zip
 
 # Instrucciones locales del asistente Claude Code (no forman parte del artifact)
 .claude/
+
+# Estado local de la publicación en Zenodo (scripts/zenodo_publicar.py)
+.zenodo_deposito.json

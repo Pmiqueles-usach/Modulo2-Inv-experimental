@@ -3,7 +3,10 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [versionado semántico](https://semver.org/lang/es/).
 
-## [1.0.0] – Semana 5 (pendiente de publicación en Zenodo)
+## [1.0.0] – 2026‑11‑04 – Semana 5 (Zenodo, DOI 10.5281/zenodo.23954259)
+- Publicación en Zenodo por API con DOI reservado antes de archivar (`scripts/zenodo_publicar.py`);
+  autor y licencias con nombre completo; el enunciado del curso queda fuera del zip archivado.
+- `scripts/descargar_zenodo.py` para la evaluación cruzada y plantilla de respuesta a la evaluación.
 - Reproducible también en **Windows** (Docker Desktop + PowerShell): el Snakefile lanza los
   contenedores con `subprocess` (sin bash); `collect_env` y `check_artifact` pasan a Python;
   nuevos `scripts/build_images.ps1`, `run_container.ps1` y `reproducir.ps1`; `.gitattributes`

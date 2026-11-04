@@ -1,7 +1,8 @@
 # Benchmark reproducible de multiplicación de matrices NxN en C++, Go, Java y Python
 
-[![DOI](https://zenodo.org/badge/DOI/PENDIENTE.svg)](https://doi.org/PENDIENTE)
-<!-- Semana 5: reemplazar PENDIENTE por el DOI entregado por Zenodo -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23954259.svg)](https://doi.org/10.5281/zenodo.23954259)
+
+> **Versión archivada (v1.0.0):** [https://zenodo.org/records/23954259](https://zenodo.org/records/23954259) · DOI [10.5281/zenodo.23954259](https://doi.org/10.5281/zenodo.23954259)
 
 Artifact científico del **Módulo 2 – Documentación de experimentos (Reproducibilidad y
 Replicabilidad)**, curso *Experimentación Computacional* (Doctorado, USACH), construido según
@@ -16,7 +17,7 @@ qué resultado se debe obtener**.
 |---|---|---|
 | Artifacts Evaluated – **Functional** | 3 | ✅ autoevaluado ([§5.6](#56-autoevaluación-acm-functional)) |
 | Artifacts Evaluated – **Reusable** | 4 | ✅ autoevaluado ([§6.6](#66-autoevaluación-acm-reusable)) |
-| Artifacts **Available** | 5 | ⏳ pendiente de DOI en Zenodo ([§7](#7-semana-5-publicación-en-zenodo-y-evaluación-cruzada)) |
+| Artifacts **Available** | 5 | ✅ Zenodo, DOI [10.5281/zenodo.23954259](https://doi.org/10.5281/zenodo.23954259) ([§7](#7-semana-5-publicación-en-zenodo-y-evaluación-cruzada)) |
 | Results **Reproduced** | 5 | ⏳ evaluación cruzada por un compañero ([§7.4](#74-evaluación-cruzada-reproducir-el-artifact-de-otra-persona)) |
 
 > La autoevaluación no equivale a un badge oficial: los badges ACM los otorga el comité de
@@ -25,6 +26,10 @@ qué resultado se debe obtener**.
 ## Inicio rápido
 
 Requiere Docker (o Podman) y Python ≥ 3.11. Detalle de la instalación en [§2](#2-requisitos-e-instalación).
+
+> **¿Descargaste el artifact desde Zenodo?** Descomprime el zip y entra a la carpeta
+> `Modulo2-Inv-experimental-v1.0.0/` en lugar de hacer `git clone`; el resto de los comandos es
+> idéntico. El zip archivado contiene exactamente la etiqueta `v1.0.0` de GitHub.
 
 **Linux / macOS**
 
@@ -807,25 +812,41 @@ Debe mostrar todo `[ OK ]` y "Artifact completo." Mientras no exista el DOI, tam
 
 ### 7.3 Paso a paso: publicar en Zenodo
 
-Procedimiento completo en [docs/ZENODO.md](docs/ZENODO.md):
+Se usó la **API REST de Zenodo** con [scripts/zenodo_publicar.py](scripts/zenodo_publicar.py)
+(solo biblioteca estándar). Su ventaja es que el DOI se **reserva antes** de archivar, de modo que
+la copia archivada ya trae el DOI en el README y en `CITATION.cff`. Procedimiento completo y
+alternativas (integración GitHub → Zenodo o carga web) en [docs/ZENODO.md](docs/ZENODO.md).
 
-1. Iniciar sesión en https://zenodo.org con la cuenta de GitHub.
-2. *Account → GitHub*: activar el repositorio `Pmiqueles-usach/Modulo2-Inv-experimental`.
-3. Confirmar que `main` tiene los resultados finales y que todo está en commits.
-4. Crear la versión:
+1. En https://zenodo.org: *Settings → Applications → Personal access tokens → New token* con
+   permisos `deposit:write` y `deposit:actions`; guardarlo en `~/.zenodo_token` (fuera del repo).
+2. Crear el borrador y reservar el DOI (metadatos tomados de [.zenodo.json](.zenodo.json)):
+   ```bash
+   python3 scripts/zenodo_publicar.py reservar
+   ```
+3. Escribir el DOI reservado en este README (badge, §7.5 y §12), [CITATION.cff](CITATION.cff),
+   [docs/DATASHEET_FAIR.md](docs/DATASHEET_FAIR.md) y [docs/ACM_BADGES.md](docs/ACM_BADGES.md);
+   comprobar con `python3 scripts/check_artifact.py` (ya no debe mostrar el aviso del DOI).
+4. Commit, etiqueta y zip de la versión (el zip contiene exactamente lo versionado en la etiqueta):
    ```bash
    git tag -a v1.0.0 -m "Artifact v1.0.0 - publicación Zenodo"
-   git push origin v1.0.0
+   git archive --format=zip --prefix=Modulo2-Inv-experimental-v1.0.0/ -o artifact-v1.0.0.zip v1.0.0
    ```
-   y en GitHub: *Releases → Draft a new release → v1.0.0 → Publish release*.
-5. Zenodo archiva la release con los metadatos de [.zenodo.json](.zenodo.json) y asigna el DOI.
-6. Reemplazar `PENDIENTE` por el DOI en este README (badge, §7.5 y §12), [CITATION.cff](CITATION.cff),
-   [docs/DATASHEET_FAIR.md](docs/DATASHEET_FAIR.md) y [docs/ACM_BADGES.md](docs/ACM_BADGES.md);
-   comprobar con `grep -rn PENDIENTE --include=*.md --include=*.cff .`; hacer commit y push.
+5. Subir, revisar el borrador en la web y publicar (publicar es **irreversible**):
+   ```bash
+   python3 scripts/zenodo_publicar.py subir artifact-v1.0.0.zip
+   python3 scripts/zenodo_publicar.py estado
+   python3 scripts/zenodo_publicar.py publicar
+   ```
+6. Subir a GitHub: `git push origin main --tags`.
 
 ### 7.4 Evaluación cruzada: reproducir el artifact de otra persona
 
-1. Descargar el artifact del compañero **desde Zenodo** (no desde GitHub) en una carpeta nueva.
+1. Descargar el artifact del compañero **desde Zenodo** (no desde GitHub) en una carpeta nueva,
+   fuera de este repositorio. El script verifica los checksums de Zenodo, descomprime y deja un
+   resumen `DESCARGA.md` como evidencia, **sin ejecutar nada** del artifact descargado:
+   ```bash
+   python3 scripts/descargar_zenodo.py https://zenodo.org/records/<id> ../evaluacion-<compañero>
+   ```
 2. Copiar [docs/evaluacion-cruzada/PLANTILLA_EVALUACION.md](docs/evaluacion-cruzada/PLANTILLA_EVALUACION.md)
    como `docs/evaluacion-cruzada/evaluacion-<compañero>.md`.
 3. Seguir **solo** su README; anotar cada comando, error, dependencia faltante, ambigüedad y
@@ -858,15 +879,16 @@ Los segundos absolutos **no** tienen que coincidir: dependen del hardware.
 | Mini datasheet FAIR | [docs/DATASHEET_FAIR.md](docs/DATASHEET_FAIR.md) | ✅ |
 | Reproducción en Windows con un comando | [scripts/reproducir.ps1](scripts/reproducir.ps1) | ✅ |
 | Plantilla de evaluación cruzada | [docs/evaluacion-cruzada/PLANTILLA_EVALUACION.md](docs/evaluacion-cruzada/PLANTILLA_EVALUACION.md) | ✅ |
-| Release `v1.0.0` y DOI | Zenodo · **DOI: PENDIENTE** | ⏳ |
+| Publicación por API y descarga para evaluar | [scripts/zenodo_publicar.py](scripts/zenodo_publicar.py), [scripts/descargar_zenodo.py](scripts/descargar_zenodo.py) | ✅ |
+| Release `v1.0.0` y DOI | [https://zenodo.org/records/23954259](https://zenodo.org/records/23954259) · **DOI: [10.5281/zenodo.23954259](https://doi.org/10.5281/zenodo.23954259)** | ✅ |
 | Evaluación del artifact de un compañero | `docs/evaluacion-cruzada/evaluacion-<compañero>.md` | ⏳ |
-| Respuesta a la evaluación recibida | `docs/evaluacion-cruzada/respuesta-evaluacion.md` | ⏳ |
+| Respuesta a la evaluación recibida | [docs/evaluacion-cruzada/respuesta-evaluacion.md](docs/evaluacion-cruzada/respuesta-evaluacion.md) | ⏳ |
 
 ### 7.6 Autoevaluación ACM: Available y Reproduced
 
 | Badge | Requisito | Estado |
 |---|---|---|
-| **Available** | Depósito en un repositorio de archivo con DOI (Zenodo) | ⏳ pendiente de la release `v1.0.0` |
+| **Available** | Depósito en un repositorio de archivo con DOI (Zenodo) | ✅ Cumple: `v1.0.0` archivada con DOI [10.5281/zenodo.23954259](https://doi.org/10.5281/zenodo.23954259) |
 | **Reproduced** | Otra persona obtiene los resultados principales con este artifact (criterios de §7.4) | ⏳ pendiente de la evaluación cruzada |
 
 ---
@@ -1017,7 +1039,10 @@ mismas etiquetas `matmul-<lang>:1.0` y ejecute el pipeline completo de §6.4 con
 ## 12. Licencia, cita y referencias
 
 - Código: [MIT](LICENSE). Datos, resultados, figuras y documentación: [CC BY 4.0](LICENSE-DATA).
-- Cómo citar: [CITATION.cff](CITATION.cff) · DOI de Zenodo: PENDIENTE (semana 5).
+- Cómo citar: [CITATION.cff](CITATION.cff) · DOI de Zenodo: [10.5281/zenodo.23954259](https://doi.org/10.5281/zenodo.23954259).
+
+  > Miqueles, P. (2026). *Benchmark reproducible de multiplicación de matrices NxN en C++, Go,
+  > Java y Python* (v1.0.0) [Software]. Zenodo. https://doi.org/10.5281/zenodo.23954259
 - Historia de versiones: [CHANGELOG.md](CHANGELOG.md).
 
 Referencias:

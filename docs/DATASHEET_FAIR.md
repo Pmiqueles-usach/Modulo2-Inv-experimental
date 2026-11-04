@@ -9,10 +9,10 @@ Inspirado en *Datasheets for Datasets* (Gebru et al., 2021) y los principios FAI
 |---|---|
 | Título | Benchmark reproducible de multiplicación naive de matrices NxN en C++, Go, Java y Python |
 | Versión | 1.0.0 |
-| Identificador persistente | DOI Zenodo: **PENDIENTE** (Semana 5) |
+| Identificador persistente | DOI Zenodo: [10.5281/zenodo.23954259](https://doi.org/10.5281/zenodo.23954259) |
 | Repositorio de desarrollo | https://github.com/Pmiqueles-usach/Modulo2-Inv-experimental |
 | Licencia de los datos | CC BY 4.0 (código: MIT) |
-| Contacto | Pmiqueles-usach (GitHub) |
+| Autor y contacto | Pier Miqueles (Universidad de Santiago de Chile) · GitHub: Pmiqueles-usach |
 
 ## 2. Motivación
 
