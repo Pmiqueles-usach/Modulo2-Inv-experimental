@@ -242,7 +242,7 @@ mismo modelo sobre log10(tiempo) y Kruskal-Wallis por N.
     ├── ACM_BADGES.md          ← autoevaluación ACM detallada
     ├── DATASHEET_FAIR.md      ← descripción FAIR de los datos                   (semana 5)
     ├── ZENODO.md              ← procedimiento de publicación                    (semana 5)
-    ├── evaluacion-cruzada/    ← plantilla de evaluación cruzada                 (semana 5)
+    ├── evaluacion-cruzada/    ← plantilla y evaluaciones de 4 compañeros       (semana 5)
     ├── presentaciones/        ← presentaciones de las semanas 1 y 2
     └── semanas/               ← enlaces a cada semana de esta guía
 ```
@@ -868,6 +868,10 @@ Los segundos absolutos **no** tienen que coincidir: dependen del hardware.
 6. Emitir un dictamen por badge (Functional, Reusable, Available, Reproduced) con su
    justificación y entregarlo al autor.
 
+**Evaluaciones realizadas (2026‑11‑09):** los 4 artifacts enviados por el profesor se reprodujeron
+de punta a punta. El resumen de dictámenes, los hallazgos transversales y las adaptaciones del
+entorno están en [docs/evaluacion-cruzada/README.md](docs/evaluacion-cruzada/README.md).
+
 ### 7.5 Entregables y estado
 
 | Entregable | Ubicación | Estado |
@@ -881,9 +885,9 @@ Los segundos absolutos **no** tienen que coincidir: dependen del hardware.
 | Plantilla de evaluación cruzada | [docs/evaluacion-cruzada/PLANTILLA_EVALUACION.md](docs/evaluacion-cruzada/PLANTILLA_EVALUACION.md) | ✅ |
 | Publicación por API y descarga para evaluar | [scripts/zenodo_publicar.py](scripts/zenodo_publicar.py), [scripts/descargar_zenodo.py](scripts/descargar_zenodo.py) | ✅ |
 | Release `v1.0.0` y DOI | [https://zenodo.org/records/23954259](https://zenodo.org/records/23954259) · **DOI: [10.5281/zenodo.23954259](https://doi.org/10.5281/zenodo.23954259)** | ✅ |
-| Presentación final (resultados, Zenodo y evaluación cruzada) | [docs/presentaciones/Presentacion_Semana_5_Publicacion_y_Evaluacion_Cruzada.pptx](docs/presentaciones/Presentacion_Semana_5_Publicacion_y_Evaluacion_Cruzada.pptx) | ⏳ completar con la evaluación cruzada |
-| Evaluación del artifact de un compañero | `docs/evaluacion-cruzada/evaluacion-<compañero>.md` | ⏳ |
-| Respuesta a la evaluación recibida | [docs/evaluacion-cruzada/respuesta-evaluacion.md](docs/evaluacion-cruzada/respuesta-evaluacion.md) | ⏳ |
+| Presentación final (resultados, Zenodo y evaluación cruzada) | [docs/presentaciones/Presentacion_Semana_5_Publicacion_y_Evaluacion_Cruzada.pptx](docs/presentaciones/Presentacion_Semana_5_Publicacion_y_Evaluacion_Cruzada.pptx) | ✅ |
+| Evaluación de los artifacts de los compañeros (4) | [docs/evaluacion-cruzada/README.md](docs/evaluacion-cruzada/README.md) (resumen) · [Fuertes](docs/evaluacion-cruzada/evaluacion-fuertes.md) · [Fornes](docs/evaluacion-cruzada/evaluacion-fornes.md) · [Pirez](docs/evaluacion-cruzada/evaluacion-pirez.md) · [Valenzuela](docs/evaluacion-cruzada/evaluacion-valenzuela.md) · comparación uniforme: [scripts/comparar_evaluacion.py](scripts/comparar_evaluacion.py) | ✅ 2026‑11‑09 |
+| Respuesta a la evaluación recibida | [docs/evaluacion-cruzada/respuesta-evaluacion.md](docs/evaluacion-cruzada/respuesta-evaluacion.md) | ⏳ a la espera del dictamen del evaluador |
 
 ### 7.6 Autoevaluación ACM: Available y Reproduced
 
