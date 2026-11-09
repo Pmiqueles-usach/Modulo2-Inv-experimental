@@ -26,7 +26,7 @@ En los cuatro casos se rechaza H₀ y Python es 1 a 2 órdenes de magnitud más 
 1. **Los segundos no se reproducen; las decisiones sí.** En las cuatro reproducciones se mantienen las mismas decisiones del ANOVA del autor. Los tiempos absolutos y el orden entre C++, Go y Java cambian con el hardware: con las mismas imágenes, C++ con N=1500 tardó 11,6 s en el equipo de Fuertes y 3,7 s en el del evaluador.
 2. **La verificación de equivalencia numérica separa a los artifacts.** Fuertes valida contra matrices de control y Valenzuela compara checksums automáticamente (idénticos a los publicados). Fornes solo imprime el checksum y Pirez no lo calcula.
 3. **Fijar versiones fue lo que más facilitó la reproducción.** Ayudaron los digests de las imágenes base (Fuertes) y los lockfiles de Python (Fuertes, Valenzuela, Pirez). Fornes no fija versiones y ni siquiera lista Snakemake.
-4. **La documentación quedó desfasada en el depósito.** Dos README archivados dicen "DOI pendiente" (Valenzuela, Fornes) y uno manda a clonar GitHub en vez de usar el zip de Zenodo.
+4. **La documentación quedó desfasada en el depósito.** Solo el README archivado de Pirez contiene su DOI. Valenzuela y Fornes dicen "DOI pendiente" y Fuertes no lo menciona. Además, Fornes manda a clonar GitHub en vez de usar el zip de Zenodo. (El enunciado pide el DOI en el README de GitHub; aquí se evaluó solo el depósito).
 5. **Validez interna.** Fornes compila C++ con `-O0` y Go/Java optimizados; por eso C++ aparece más lento que Go y Java. Es una decisión documentada, pero compara configuraciones de compilación además de lenguajes.
 
 ## Entorno y adaptaciones del evaluador (comunes a las cuatro)

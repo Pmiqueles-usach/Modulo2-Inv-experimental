@@ -58,7 +58,8 @@
 | 2 | Otro (entorno) | `ejecutar.py` usa `docker info --format {{.OSType}}`, un campo que Podman no expone. | El adaptador del evaluador responde `linux` a esa consulta; el resto se traduce a `podman`. | Baja (propia del evaluador) |
 | 3 | Dependencia | Los `FROM` usan solo digest, sin registro; Podman exige un nombre calificado. | `unqualified-search-registries=["docker.io"]` en el entorno del evaluador. | Baja (propia de Podman) |
 | 4 | Otro | Tukey se omite si los diagnósticos fallan. La decisión es prudente, pero la pregunta de investigación (¿qué lenguajes difieren?) queda sin respuesta post-hoc en las dos corridas. | Ninguna. | Baja |
-| 5 | Otro | El `--cpus=1` limita CPU por contenedor; con Podman rootless y cgroupfs puede que no se aplique (no hubo error). | Ninguna. | Baja |
+| 5 | Ambigüedad doc. | El README archivado no contiene el DOI (solo lo menciona el DATASHEET sin el número). El enunciado pide incorporarlo al README de GitHub, que no se evaluó (solo el depósito). | Ninguna. | Baja |
+| 6 | Otro | El `--cpus=1` limita CPU por contenedor; con Podman rootless y cgroupfs puede que no se aplique (no hubo error). | Ninguna. | Baja |
 
 ## 6. Comparación de resultados
 
@@ -85,13 +86,14 @@ lenguajes compilados **depende del hardware**: con las mismas imágenes, en su e
 
 | Badge | ¿Otorgaría? | Justificación |
 |---|---|---|
-| Artifacts Available | **Sí** | Zenodo con DOI, licencia MIT y DATASHEET FAIR. |
+| Artifacts Available | **Sí** | Zenodo con DOI, licencia MIT y DATASHEET FAIR. El README archivado no muestra el DOI. |
 | Artifacts Evaluated – Functional | **Sí** | Corrió completo con los comandos del README. Verifica fuentes, entradas e imágenes (SHA-256) y valida cada multiplicación contra matrices de control. |
 | Artifacts Evaluated – Reusable | **Sí** | Imágenes base fijadas por digest, dependencias completamente fijadas, registro automático del equipo y de las versiones, orden aleatorizado con semilla y calentamientos. Mejorable: guía muy atada a Windows/WSL. |
 | Results Reproduced | **Sí** | Todas las conclusiones declaradas por el autor se reproducen: efectos de lenguaje, tamaño e interacción significativos en log10, y omisión de Tukey por supuestos. El orden entre C++/Go/Java no se reproduce, pero el autor no lo afirma. |
 
 ## 8. Recomendaciones al autor
 
+- Incorporar el DOI en el README (y en una nueva versión del depósito).
 - Agregar una sección breve "Linux nativo / Podman" con los comandos mínimos y sin rutas fijas de usuario.
 - Usar `docker version`/`docker info --format '{{.OperatingSystem}}'`, o capturar el error, para que la comprobación del SO no dependa de un campo exclusivo de Docker.
 - Escribir los `FROM` como `docker.io/library/gcc@sha256:…` para que funcionen también en Podman.
