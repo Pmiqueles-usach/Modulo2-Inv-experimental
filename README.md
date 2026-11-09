@@ -243,7 +243,7 @@ mismo modelo sobre log10(tiempo) y Kruskal-Wallis por N.
     ├── DATASHEET_FAIR.md      ← descripción FAIR de los datos                   (semana 5)
     ├── ZENODO.md              ← procedimiento de publicación                    (semana 5)
     ├── evaluacion-cruzada/    ← plantilla y evaluaciones de 4 compañeros       (semana 5)
-    ├── presentaciones/        ← presentaciones de las semanas 1 y 2
+    ├── presentaciones/        ← presentaciones (semanas 1, 2 y 5) y guía de demostración
     └── semanas/               ← enlaces a cada semana de esta guía
 ```
 
@@ -870,7 +870,8 @@ Los segundos absolutos **no** tienen que coincidir: dependen del hardware.
 
 **Evaluaciones realizadas (2026‑11‑09):** los 4 artifacts enviados por el profesor se reprodujeron
 de punta a punta. El resumen de dictámenes, los hallazgos transversales y las adaptaciones del
-entorno están en [docs/evaluacion-cruzada/README.md](docs/evaluacion-cruzada/README.md).
+entorno están en [docs/evaluacion-cruzada/README.md](docs/evaluacion-cruzada/README.md). Los resultados por
+compañero están en [§7.7](#77-evaluación-cruzada-realizada-resultados-por-compañero).
 
 ### 7.5 Entregables y estado
 
@@ -887,6 +888,7 @@ entorno están en [docs/evaluacion-cruzada/README.md](docs/evaluacion-cruzada/RE
 | Release `v1.0.0` y DOI | [https://zenodo.org/records/23954259](https://zenodo.org/records/23954259) · **DOI: [10.5281/zenodo.23954259](https://doi.org/10.5281/zenodo.23954259)** | ✅ |
 | Presentación final (resultados, Zenodo y evaluación cruzada) | [docs/presentaciones/Presentacion_Semana_5_Publicacion_y_Evaluacion_Cruzada.pptx](docs/presentaciones/Presentacion_Semana_5_Publicacion_y_Evaluacion_Cruzada.pptx) | ✅ |
 | Evaluación de los artifacts de los compañeros (4) | [docs/evaluacion-cruzada/README.md](docs/evaluacion-cruzada/README.md) (resumen) · [Fuertes](docs/evaluacion-cruzada/evaluacion-fuertes.md) · [Fornes](docs/evaluacion-cruzada/evaluacion-fornes.md) · [Pirez](docs/evaluacion-cruzada/evaluacion-pirez.md) · [Valenzuela](docs/evaluacion-cruzada/evaluacion-valenzuela.md) · comparación uniforme: [scripts/comparar_evaluacion.py](scripts/comparar_evaluacion.py) | ✅ 2026‑11‑09 |
+| Guía de demostración por consola y comparaciones por compañero | [docs/presentaciones/Guia_Demo_Reproduccion_Semana_5.md](docs/presentaciones/Guia_Demo_Reproduccion_Semana_5.md) | ✅ |
 | Respuesta a la evaluación recibida | [docs/evaluacion-cruzada/respuesta-evaluacion.md](docs/evaluacion-cruzada/respuesta-evaluacion.md) | ⏳ a la espera del dictamen del evaluador |
 
 ### 7.6 Autoevaluación ACM: Available y Reproduced
@@ -895,6 +897,117 @@ entorno están en [docs/evaluacion-cruzada/README.md](docs/evaluacion-cruzada/RE
 |---|---|---|
 | **Available** | Depósito en un repositorio de archivo con DOI (Zenodo) | ✅ Cumple: `v1.0.0` archivada con DOI [10.5281/zenodo.23954259](https://doi.org/10.5281/zenodo.23954259) |
 | **Reproduced** | Otra persona obtiene los resultados principales con este artifact (criterios de §7.4) | ⏳ pendiente de la evaluación cruzada |
+
+### 7.7 Evaluación cruzada realizada: resultados por compañero
+
+El 2026‑11‑09 se reprodujeron **de punta a punta** los 4 artifacts que envió el profesor, usando
+solo su depósito de Zenodo, su README y sus archivos de configuración (§7.4). En los cuatro se
+construyeron manualmente los 4 contenedores, se ejecutó su Snakefile, se generaron `cpp.csv`,
+`go.csv`, `java.csv` y `python.csv`, se integraron automáticamente en un `benchmark.csv` de 120
+filas y se produjeron el ANOVA, las tablas y los gráficos. **No se modificó ningún artifact.** Solo
+se adaptó el entorno del evaluador: un adaptador `docker` → `podman` y el registro `docker.io`
+para los nombres cortos de imagen.
+
+| Compañero | DOI | Pipeline | Tiempo | Available | Functional | Reusable | Reproduced | Evaluación |
+|---|---|---|---:|:-:|:-:|:-:|:-:|---|
+| Joel Fuertes | [10.5281/zenodo.23988249](https://doi.org/10.5281/zenodo.23988249) | 4/4 pasos | 113 min | ✅ | ✅ | ✅ | ✅ | [detalle](docs/evaluacion-cruzada/evaluacion-fuertes.md) |
+| Jorge Fornes | [10.5281/zenodo.23987654](https://doi.org/10.5281/zenodo.23987654) | 19/19 pasos | 95 min | ✅ | ⚠️ con reservas | ❌ | ✅ conclusiones generales | [detalle](docs/evaluacion-cruzada/evaluacion-fornes.md) |
+| Alejandro Pirez | [10.5281/zenodo.23954875](https://doi.org/10.5281/zenodo.23954875) | 19/19 pasos | 66 min | ✅ | ✅ | ✅ | ✅ | [detalle](docs/evaluacion-cruzada/evaluacion-pirez.md) |
+| Jonathan Valenzuela | [10.5281/zenodo.23891451](https://doi.org/10.5281/zenodo.23891451) | 8/8 pasos | 102 min | ✅ | ✅ | ✅ | ✅ | [detalle](docs/evaluacion-cruzada/evaluacion-valenzuela.md) |
+
+**Contenido mínimo exigido por el enunciado.** Los 4 depósitos traen el código en los 4 lenguajes,
+el README, los Dockerfile, el Snakefile, los 4 CSV, `benchmark.csv`, el análisis estadístico, las
+tablas y gráficos, la licencia y el datasheet FAIR. Lo único que falta en 3 de ellos es el **DOI
+dentro del README archivado**: solo Pirez lo incluye; Valenzuela y Fornes dicen "pendiente" y
+Fuertes no lo menciona.
+
+**Publicado → reproducido (resumen):**
+
+| Compañero | Decisión sobre H₀ | Interacción lenguaje × N | Python/C++ (N = 1500) | Equivalencia numérica | Diferencia principal |
+|---|---|---|---|---|---|
+| Fuertes | igual (se rechaza) | igual (significativa) | 42× → 105× | ✅ validación contra `control.txt` | el orden C++/Go/Java cambia (depende del hardware; el autor no afirma un orden) |
+| Fornes | igual | igual | 6,7× → 5,9× | ⚠️ checksum solo en el log | no se reproduce Go ≠ Java en N = 1500; C++ con `-O0` |
+| Pirez | igual | igual | 99× → 75× | ❌ sin checksum | Go y Java se invierten en N = 500 y 1500 (el par de menor diferencia) |
+| Valenzuela | igual | igual | 68× → 133× | ✅ checksums idénticos a los publicados | Go y Java se invierten (no significativo según su Tukey) |
+
+<details>
+<summary><b>Detalle: medias publicadas → reproducidas (s) y decisiones de cada compañero</b></summary>
+
+**Joel Fuertes**: mismas decisiones; el orden entre C++, Go y Java cambia.
+
+| Lenguaje | N = 500 | N = 1000 | N = 1500 |
+|---|---|---|---|
+| C++ | 0,123 → 0,075 | 2,35 → 0,49 | 11,6 → 3,7 |
+| Go | 0,195 → 0,123 | 3,23 → 1,19 | 14,8 → 5,5 |
+| Java | 0,135 → 0,093 | 2,25 → 0,72 | 12,2 → 7,1 |
+| Python | 17,8 → 15,0 | 142 → 126 | 491 → 391 |
+
+ANOVA en log10: efecto del lenguaje p = 1,5·10⁻¹⁷⁷ → 1,4·10⁻¹⁵⁷ e interacción p = 2,1·10⁻⁷⁵ → 1,2·10⁻⁴⁸. En las dos corridas se omite Tukey porque fallan los supuestos.
+
+**Jorge Fornes**: se reproduce lo general, pero no la diferencia Go ≠ Java en N = 1500.
+
+| Lenguaje | N = 500 | N = 1000 | N = 1500 |
+|---|---|---|---|
+| C++ (-O0) | 0,505 → 1,19 | 7,89 → 14,6 | 34,9 → 53,8 |
+| Go | 0,129 → 0,214 | 1,95 → 3,47 | 9,66 → 15,3 |
+| Java | 0,082 → 0,169 | 1,35 → 1,53 | 15,5 → 15,7 |
+| Python | 7,71 → 10,4 | 63,3 → 84,7 | 234 → 317 |
+
+ANOVA en segundos: efecto del lenguaje p = 2,2·10⁻¹⁶⁴ → 1,1·10⁻¹³² e interacción p = 5,1·10⁻¹⁵⁹ → 8,9·10⁻¹²⁸. El Tukey global da lo mismo en ambas corridas. Go ≠ Java en N = 1500 era significativo (p < 0,001) y en la reproducción no lo es (p = 1,0). El orden de los lenguajes es idéntico.
+
+**Alejandro Pirez**: de Windows a contenedores, las decisiones se mantienen.
+
+| Lenguaje | N = 500 | N = 1000 | N = 1500 |
+|---|---|---|---|
+| C++ | 0,110 → 0,068 | 0,96 → 0,67 | 4,44 → 3,93 |
+| Go | 0,128 → 0,103 | 1,13 → 1,17 | 6,13 → 6,34 |
+| Java | 0,129 → 0,087 | 1,11 → 1,10 | 7,23 → 5,88 |
+| Python | 8,12 → 7,24 | 114 → 70 | 441 → 295 |
+
+ANOVA en log10: efecto del lenguaje p = 3,7·10⁻¹⁵⁴ → 1,0·10⁻¹⁵⁴ e interacción p = 8,7·10⁻²⁴ → 3,3·10⁻¹⁹. En su Tukey en segundos, en ambas corridas solo Python difiere.
+
+**Jonathan Valenzuela**: mismo código, mismas decisiones estadísticas.
+
+| Lenguaje | N = 500 | N = 1000 | N = 1500 |
+|---|---|---|---|
+| C++ | 0,176 → 0,075 | 1,19 → 0,70 | 4,89 → 3,45 |
+| Go | 0,182 → 0,104 | 1,36 → 1,18 | 6,09 → 6,85 |
+| Java | 0,236 → 0,095 | 1,81 → 0,92 | 6,62 → 5,81 |
+| Python | 10,8 → 14,6 | 90,5 → 121 | 332 → 459 |
+
+Los 12 checksums (4 lenguajes × 3 N) son idénticos a los publicados. ANOVA en segundos: efecto del lenguaje p = 3,7·10⁻¹⁵³ → 1,1·10⁻¹⁰⁹ e interacción p = 2,9·10⁻¹⁴⁸ → 2,9·10⁻¹⁰⁵. En su Tukey por N, en ambas corridas solo Python difiere.
+
+</details>
+
+**Conclusiones de la evaluación cruzada**
+
+- En los 4 artifacts se mantiene la misma decisión sobre H₀ que publicó el autor, y Python queda 1–2 órdenes de magnitud más lento.
+- Los segundos y el orden fino entre C++, Go y Java **no** se reproducen, porque dependen del hardware. Por eso se comparan decisiones, órdenes y razones.
+- Lo que más facilitó la reproducción fue fijar versiones (digest de imágenes y lockfile) y verificar la equivalencia con un **checksum** automático: la "huella" numérica del resultado, que coincide si el código hace lo mismo.
+- **Limitación:** los 4 pipelines corrieron en paralelo para tener los resultados el mismo día. Dentro de cada uno, los contenedores corrieron de a uno.
+
+**Material de apoyo**
+
+| Material | Ubicación |
+|---|---|
+| Resumen, hallazgos y entorno del evaluador | [docs/evaluacion-cruzada/README.md](docs/evaluacion-cruzada/README.md) |
+| Evaluación completa por compañero (plantilla ACM) | [Fuertes](docs/evaluacion-cruzada/evaluacion-fuertes.md) · [Fornes](docs/evaluacion-cruzada/evaluacion-fornes.md) · [Pirez](docs/evaluacion-cruzada/evaluacion-pirez.md) · [Valenzuela](docs/evaluacion-cruzada/evaluacion-valenzuela.md) |
+| Tablas numéricas de la comparación | [docs/evaluacion-cruzada/comparaciones/](docs/evaluacion-cruzada/comparaciones/) |
+| Script de comparación uniforme | [scripts/comparar_evaluacion.py](scripts/comparar_evaluacion.py) |
+| Guía de demostración paso a paso por consola | [docs/presentaciones/Guia_Demo_Reproduccion_Semana_5.md](docs/presentaciones/Guia_Demo_Reproduccion_Semana_5.md) |
+| Presentación final (19 láminas, con notas del orador) | [docs/presentaciones/Presentacion_Semana_5_Publicacion_y_Evaluacion_Cruzada.pptx](docs/presentaciones/Presentacion_Semana_5_Publicacion_y_Evaluacion_Cruzada.pptx) |
+
+**Demostración rápida en consola** (artifact de Pirez, prueba corta de ≈ 1–2 min). El paso a
+paso completo está en la guía:
+
+```bash
+python3 scripts/descargar_zenodo.py 10.5281/zenodo.23954875 ../demo-pirez   # descarga + MD5
+cd ../demo-pirez/contenido
+for l in cpp go java python; do docker build -t matrix-bench-$l:1.0 $l; done  # build manual
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+python -m snakemake --cores 1 --resources machine=1 --config smoke=true       # pipeline
+ls results/smoke/{cpp,go,java,python}.csv results/smoke/benchmark.csv results/smoke/analysis
+```
 
 ---
 
